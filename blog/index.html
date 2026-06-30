@@ -11,5 +11,16 @@
     <h1>Welcome to the Blog</h1>
     <p>Here you can find the latest articles and updates.</p>
 </body>
+    <script>
+if (location.pathname.endsWith('/index.html')) {
+  history.replaceState(
+    null,
+    '',
+    location.pathname.replace('/index.html', '/') +
+    location.search +
+    location.hash
+  );
+}
+</script>
 
 </html>
