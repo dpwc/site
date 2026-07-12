@@ -1,0 +1,3708 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DPWC Admin Panel</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Mulish:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Firebase Compat SDKs — version 10.7.0, proven stable -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase init in head — var ensures window-level global, reusable everywhere -->
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyCDgoe7vDe4iiv_kxgWOqyUnYRpWsJ8kAY",
+            authDomain: "site-f899e.firebaseapp.com",
+            projectId: "site-f899e",
+            storageBucket: "site-f899e.firebasestorage.app",
+            messagingSenderId: "877529208083",
+            appId: "1:877529208083:web:53c75ee1e18140cac3f6e6"
+        };
+        var fbApp = firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+    </script>
+
+    <style>
+        :root {
+            --evergreen: #16302a;
+            --evergreen-2: #1f4338;
+            --oat: #f4efe5;
+            --oat-deep: #ece4d4;
+            --surface: #fbf7ef;
+            --sage: #7e9885;
+            --sage-soft: #dfe6dc;
+            --honey: #bc7f37;
+            --honey-soft: #d9a655;
+            --clay: #a8856a;
+            --ink: #21302b;
+            --ink-soft: #54635c;
+            --bone: #f8f4ec;
+            --line: rgba(22, 48, 42, .14);
+            --shadow: 0 24px 60px -28px rgba(22, 48, 42, .35);
+            --shadow-soft: 0 14px 40px -24px rgba(22, 48, 42, .4);
+            --ease: cubic-bezier(.22, .61, .36, 1);
+            --sidebar-w: 260px;
+            --topbar-h: 60px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Mulish", system-ui, sans-serif;
+            background: var(--oat);
+            color: var(--ink);
+            font-size: 15px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: "Fraunces", Georgia, serif;
+            font-weight: 400;
+            line-height: 1.15;
+            letter-spacing: -.01em;
+        }
+
+        /* ===== LOGIN SCREEN ===== */
+        #loginScreen {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--oat);
+            transition: opacity .55s var(--ease), transform .55s var(--ease);
+        }
+
+        #loginScreen::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(120% 90% at 80% -10%, rgba(217, 166, 85, .2), transparent 55%),
+                radial-gradient(90% 80% at 0% 110%, rgba(126, 152, 133, .2), transparent 60%);
+        }
+
+        #loginScreen.hide {
+            opacity: 0;
+            transform: scale(.96);
+            pointer-events: none;
+        }
+
+        .login-card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 20px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 44px 44px 24px 24px;
+            padding: 48px 36px 40px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            animation: cardIn .7s var(--ease) both;
+        }
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .login-card .brand-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(160deg, var(--sage-soft), #eef2ea);
+            display: grid;
+            place-items: center;
+            margin: 0 auto 18px;
+            color: var(--evergreen);
+        }
+
+        .login-card h1 {
+            font-size: 1.6rem;
+            color: var(--evergreen);
+            margin-bottom: 4px;
+        }
+
+        .login-card .subtitle {
+            font-size: .82rem;
+            color: var(--ink-soft);
+            margin-bottom: 28px;
+            letter-spacing: .02em;
+        }
+
+        .field {
+            position: relative;
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .field label {
+            display: block;
+            font-size: .78rem;
+            font-weight: 600;
+            color: var(--evergreen);
+            margin-bottom: 6px;
+            letter-spacing: .02em;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrap .lock-icon {
+            position: absolute;
+            left: 14px;
+            color: var(--ink-soft);
+            pointer-events: none;
+            transition: color .3s;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: .85em 48px .85em 44px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: var(--bone);
+            font-family: inherit;
+            font-size: .95rem;
+            color: var(--ink);
+            transition: border-color .3s, box-shadow .3s;
+        }
+
+        .input-wrap input:focus {
+            outline: none;
+            border-color: var(--honey);
+            box-shadow: 0 0 0 3px rgba(188, 127, 55, .15);
+        }
+
+        .toggle-pw {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--ink-soft);
+            padding: 4px;
+            border-radius: 6px;
+            transition: color .3s, background .3s;
+            display: grid;
+            place-items: center;
+        }
+
+        .toggle-pw:hover {
+            color: var(--evergreen);
+            background: var(--sage-soft);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: .95em;
+            border: none;
+            border-radius: 100px;
+            background: var(--honey);
+            color: #fff;
+            font-family: "Mulish", sans-serif;
+            font-weight: 600;
+            font-size: .95rem;
+            cursor: pointer;
+            box-shadow: 0 14px 30px -14px rgba(188, 127, 55, .8);
+            transition: transform .4s var(--ease), background .3s, box-shadow .4s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5em;
+            margin-top: 6px;
+        }
+
+        .login-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            background: #a96f2c;
+            box-shadow: 0 22px 40px -16px rgba(188, 127, 55, .9);
+        }
+
+        .login-btn:disabled {
+            opacity: .7;
+            cursor: not-allowed;
+        }
+
+        .login-btn .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, .3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+        }
+
+        .login-btn.loading .spinner {
+            display: block;
+        }
+
+        .login-btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .login-error {
+            margin-top: 14px;
+            font-size: .84rem;
+            color: #b94a48;
+            min-height: 1.3em;
+            transition: opacity .3s;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-8px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(8px);
+            }
+        }
+
+        .shake {
+            animation: shake .4s ease;
+        }
+
+        /* ===== DASHBOARD ===== */
+        #adminDashboard {
+            display: none;
+            opacity: 0;
+            transition: opacity .5s var(--ease) .25s;
+            min-height: 100vh;
+        }
+
+        #adminDashboard.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* --- Sidebar --- */
+        #sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--sidebar-w);
+            background: var(--evergreen);
+            z-index: 80;
+            display: flex;
+            flex-direction: column;
+            transition: transform .4s var(--ease);
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            padding: 24px 24px 20px;
+            border-bottom: 1px solid rgba(248, 244, 236, .1);
+        }
+
+        .sidebar-brand .name {
+            font-family: "Fraunces", Georgia, serif;
+            font-size: 1.2rem;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .sidebar-brand .tag {
+            font-size: .68rem;
+            font-weight: 600;
+            letter-spacing: .24em;
+            text-transform: uppercase;
+            color: var(--honey-soft);
+            margin-top: 6px;
+            display: block;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 16px;
+            border-radius: 14px;
+            border: none;
+            background: transparent;
+            color: rgba(248, 244, 236, .65);
+            font-family: "Mulish", sans-serif;
+            font-size: .9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background .3s var(--ease), color .3s var(--ease), transform .3s var(--ease);
+            text-align: left;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%) scaleY(0);
+            width: 3px;
+            height: 60%;
+            border-radius: 0 4px 4px 0;
+            background: var(--honey-soft);
+            transition: transform .35s var(--ease);
+        }
+
+        .nav-item:hover {
+            background: rgba(126, 152, 133, .22);
+            color: #fff;
+            transform: translateX(3px);
+        }
+
+        .nav-item.active {
+            background: rgba(126, 152, 133, .32);
+            color: #fff;
+        }
+
+        .nav-item.active::before {
+            transform: translateY(-50%) scaleY(1);
+        }
+
+        .nav-item .nav-icon {
+            flex: none;
+            display: grid;
+            place-items: center;
+            width: 22px;
+            height: 22px;
+            transition: transform .3s var(--ease);
+        }
+
+        .nav-item:hover .nav-icon {
+            transform: scale(1.1);
+        }
+
+        .sidebar-footer {
+            padding: 16px 14px 20px;
+            border-top: 1px solid rgba(248, 244, 236, .1);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(248, 244, 236, .12);
+            background: transparent;
+            color: rgba(248, 244, 236, .55);
+            font-family: "Mulish", sans-serif;
+            font-size: .88rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            transition: background .3s, color .3s, border-color .3s, transform .3s var(--ease);
+        }
+
+        .logout-btn:hover {
+            background: rgba(185, 74, 72, .15);
+            border-color: rgba(185, 74, 72, .3);
+            color: #e88;
+            transform: translateX(3px);
+        }
+
+        .logout-btn .nav-icon {
+            flex: none;
+            display: grid;
+            place-items: center;
+            width: 20px;
+            height: 20px;
+        }
+
+        .ba-mobile-only {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .ba-mobile-only {
+                display: inline-flex !important;
+            }
+
+            .ba-actions {
+                justify-content: center;
+                width: 100%;
+            }
+
+            #topBar {
+                display: flex !important;
+                left: 0;
+            }
+        }
+
+        /* ===== Authors Modal Styles ===== */
+        .authors-modal .ba-modal {
+            max-width: 100%;
+        }
+
+        .ba-authors-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 20px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .ba-add-author-btn {
+            align-self: flex-start;
+        }
+
+        .ba-authors-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .ba-author-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 14px;
+            background: var(--bone);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+        }
+
+        .ba-author-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px -8px rgba(22, 48, 42, .2);
+        }
+
+        .ba-author-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .ba-author-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--sage-soft), #e8ede5);
+            display: grid;
+            place-items: center;
+            flex: none;
+            color: var(--evergreen);
+            font-weight: 700;
+            font-size: .85rem;
+            text-transform: uppercase;
+        }
+
+        .ba-author-details {
+            min-width: 0;
+        }
+
+        .ba-author-details .name {
+            font-weight: 700;
+            font-size: .88rem;
+            color: var(--evergreen);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ba-author-details .role {
+            font-size: .75rem;
+            color: var(--ink-soft);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ba-author-delete {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--ink-soft);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            flex: none;
+            transition: all .25s var(--ease);
+        }
+
+        .ba-author-delete:hover {
+            background: #f5e0e0;
+            color: #b94a48;
+            border-color: #e8b0b0;
+            transform: scale(1.1);
+        }
+
+        .ba-author-delete svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .ba-authors-empty {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 30px 20px;
+            color: var(--ink-soft);
+            text-align: center;
+        }
+
+        .ba-authors-empty svg {
+            opacity: .3;
+        }
+
+        .ba-authors-empty p {
+            font-size: .88rem;
+        }
+
+        .ba-authors-empty.show {
+            display: flex;
+        }
+
+        /* ===== Mobile Menu Button Active State ===== */
+        #baMobileMenuBtn.active {
+            background: var(--evergreen);
+            color: #fff;
+            border-color: var(--evergreen);
+        }
+
+        /* --- Sidebar overlay (mobile) --- */
+        #sidebarOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(22, 48, 42, .5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 79;
+            opacity: 0;
+            transition: opacity .35s var(--ease);
+        }
+
+        #sidebarOverlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* --- Main content area --- */
+        #mainContent {
+            flex: 1;
+            margin-left: var(--sidebar-w);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left .4s var(--ease);
+
+        }
+
+
+        /* --- Top bar --- */
+        #topBar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-w);
+            right: 0;
+            z-index: 50;
+            height: var(--topbar-h);
+            background: rgba(251, 247, 239, .88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--line);
+            align-items: center;
+            padding: 0 28px;
+            gap: 16px;
+        }
+
+        #menuToggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--evergreen);
+            padding: 8px;
+            border-radius: 10px;
+            transition: background .3s;
+        }
+
+        #menuToggle:hover {
+            background: var(--sage-soft);
+        }
+
+        #pageTitle {
+            font-size: 1.2rem;
+            color: var(--evergreen);
+        }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-badge {
+            font-size: .72rem;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--honey);
+            background: rgba(188, 127, 55, .1);
+            padding: .35em .9em;
+            border-radius: 100px;
+        }
+
+        /* --- Tab panels --- */
+        #contentArea {
+            flex: 1;
+            padding: 0;
+        }
+
+        .tab-panel {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: tabIn .45s var(--ease) both;
+        }
+
+        @keyframes tabIn {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+
+            #sidebar.open {
+                transform: translateX(0);
+            }
+
+            #mainContent {
+                margin-left: 0;
+            }
+
+            #menuToggle {
+                display: grid;
+                place-items: center;
+            }
+
+            #contentArea {
+                padding: 0;
+            }
+
+            #topBar {
+                padding: 0 16px;
+            }
+
+            .login-card {
+                padding: 36px 24px 32px;
+                border-radius: 32px 32px 20px 20px;
+                margin: 0 16px;
+            }
+
+            .login-card h1 {
+                font-size: 1.35rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .admin-badge {
+                display: none;
+            }
+
+            .login-card {
+                padding: 30px 20px 28px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            #loginScreen,
+            #adminDashboard {
+                transition: none !important;
+            }
+
+            .tab-panel.active {
+                animation: none !important;
+                opacity: 1;
+                transform: none;
+            }
+
+            .login-card {
+                animation: none !important;
+                opacity: 1;
+                transform: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== LOGIN SCREEN ===== -->
+    <div id="loginScreen">
+        <div class="login-card" id="loginCard">
+            <div class="brand-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+                </svg>
+            </div>
+            <h1>Admin Access</h1>
+            <p class="subtitle">De Paul Wellness Centre</p>
+
+            <div class="field">
+                <label for="loginPassword">Password</label>
+                <div class="input-wrap">
+                    <svg class="lock-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    <input type="password" id="loginPassword" placeholder="Enter admin password" autocomplete="off"
+                        autofocus />
+                    <button type="button" class="toggle-pw" id="togglePw" aria-label="Toggle password visibility">
+                        <svg id="eyeOpen" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.8">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                        <svg id="eyeClosed" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.8" style="display:none">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                            <path d="m1 1 22 22" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button class="login-btn" id="loginBtn" type="button">
+                <span class="btn-text">Sign In</span>
+                <span class="spinner"></span>
+            </button>
+
+            <div class="login-error" id="loginError"></div>
+        </div>
+    </div>
+
+    <!-- ===== ADMIN DASHBOARD ===== -->
+    <div id="adminDashboard">
+
+        <div id="sidebarOverlay"></div>
+
+        <aside id="sidebar">
+            <div class="sidebar-brand">
+                <div class="name">DPWC</div>
+                <span class="tag">Admin Panel</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="blogs">
+                    <span class="nav-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
+                            <path d="M14 2v6h6" />
+                            <path d="M16 13H8" />
+                            <path d="M16 17H8" />
+                            <path d="M10 9H8" />
+                        </svg>
+                    </span>
+                    Blogs
+                </button>
+
+
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" id="logoutBtn">
+                    <span class="nav-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                            <polyline points="16 17 21 12 16 7" />
+                            <line x1="21" x2="9" y1="12" y2="12" />
+                        </svg>
+                    </span>
+                    Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <div id="mainContent">
+
+
+            <div id="contentArea">
+                <div class="tab-panel active" id="tab-blogs">
+                    <!-- Admin Blog Section — paste inside tab-blogs div -->
+                    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+
+                    <style>
+                        /* ===== Blog Admin Styles ===== */
+                        .ba-header {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            flex-wrap: wrap;
+                            gap: 12px;
+                            margin-bottom: 24px;
+                            padding: 20px 24px 0;
+                        }
+
+                        .ba-actions {
+                            display: flex;
+                            gap: 10px;
+                            flex-wrap: wrap;
+                        }
+
+                        .ba-btn {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 8px;
+                            font-family: "Mulish", sans-serif;
+                            font-weight: 600;
+                            font-size: .85rem;
+                            padding: .7em 1.4em;
+                            border-radius: 100px;
+                            cursor: pointer;
+                            border: 1px solid transparent;
+                            transition: transform .35s var(--ease), background .3s, box-shadow .35s, color .3s;
+                            letter-spacing: .01em;
+                        }
+
+                        .ba-btn svg {
+                            flex: none;
+                        }
+
+                        .ba-btn--primary {
+                            background: var(--honey);
+                            color: #fff;
+                            box-shadow: 0 10px 24px -10px rgba(188, 127, 55, .7);
+                        }
+
+                        .ba-btn--primary:hover {
+                            transform: translateY(-2px);
+                            background: #a96f2c;
+                        }
+
+                        .ba-btn--ghost {
+                            background: transparent;
+                            color: var(--evergreen);
+                            border-color: var(--line);
+                        }
+
+                        .ba-btn--ghost:hover {
+                            transform: translateY(-2px);
+                            border-color: var(--evergreen);
+                            background: rgba(22, 48, 42, .04);
+                        }
+
+                        .ba-count {
+                            font-size: .82rem;
+                            color: var(--ink-soft);
+                            font-weight: 500;
+                        }
+
+                        .ba-count b {
+                            color: var(--evergreen);
+                            font-weight: 700;
+                        }
+
+                        /* Blog list */
+                        .ba-list {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 14px;
+                            padding: 0 24px 24px;
+                        }
+
+                        .ba-item {
+                            display: grid;
+                            grid-template-columns: 180px 1fr auto;
+                            gap: 18px;
+                            align-items: center;
+                            background: var(--surface);
+                            border: 1px solid var(--line);
+                            border-radius: 18px;
+                            padding: 14px;
+                            transition: box-shadow .35s var(--ease), transform .35s var(--ease);
+                            position: relative;
+                            overflow: hidden;
+                        }
+
+                        .ba-item:hover {
+                            box-shadow: var(--shadow-soft);
+                            transform: translateY(-2px);
+                        }
+
+                        .ba-item-thumb {
+                            width: 100%;
+                            height: 110px;
+                            border-radius: 12px;
+                            overflow: hidden;
+                            flex: none;
+                        }
+
+                        .ba-item-thumb svg {
+                            width: 100%;
+                            height: 100%;
+                        }
+
+                        .ba-item-body {
+                            min-width: 0;
+                        }
+
+                        .ba-item-body h3 {
+                            font-family: "Mulish", sans-serif;
+                            font-weight: 700;
+                            font-size: .95rem;
+                            color: var(--evergreen);
+                            margin-bottom: 4px;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+
+                        .ba-item-body p {
+                            font-size: .82rem;
+                            color: var(--ink-soft);
+                            margin: 0 0 8px;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 2;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
+                        }
+
+                        .ba-item-meta {
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                            flex-wrap: wrap;
+                            font-size: .75rem;
+                            color: var(--ink-soft);
+                        }
+
+                        .ba-item-meta .ba-tag {
+                            background: rgba(22, 48, 42, .08);
+                            color: var(--evergreen);
+                            font-weight: 600;
+                            padding: .2em .7em;
+                            border-radius: 100px;
+                            font-size: .68rem;
+                            letter-spacing: .04em;
+                        }
+
+                        .ba-item-meta .ba-featured-tag {
+                            background: rgba(188, 127, 55, .15);
+                            color: var(--honey);
+                            font-weight: 700;
+                            padding: .2em .7em;
+                            border-radius: 100px;
+                            font-size: .68rem;
+                            letter-spacing: .04em;
+                        }
+
+                        /* Hover actions overlay */
+                        .ba-item-actions {
+                            display: flex;
+                            gap: 6px;
+                            opacity: 0;
+                            transform: translateX(8px);
+                            transition: opacity .3s var(--ease), transform .3s var(--ease);
+                        }
+
+                        .ba-item:hover .ba-item-actions {
+                            opacity: 1;
+                            transform: translateX(0);
+                        }
+
+                        .ba-act-btn {
+                            width: 36px;
+                            height: 36px;
+                            border-radius: 10px;
+                            border: 1px solid var(--line);
+                            background: var(--bone);
+                            color: var(--ink-soft);
+                            display: grid;
+                            place-items: center;
+                            cursor: pointer;
+                            transition: all .25s var(--ease);
+                        }
+
+                        .ba-act-btn:hover {
+                            transform: translateY(-2px);
+                        }
+
+                        .ba-act-btn--edit:hover {
+                            background: var(--sage-soft);
+                            color: var(--evergreen);
+                            border-color: var(--sage);
+                        }
+
+                        .ba-act-btn--delete:hover {
+                            background: #f5e0e0;
+                            color: #b94a48;
+                            border-color: #e8b0b0;
+                        }
+
+                        .ba-act-btn--up:hover,
+                        .ba-act-btn--down:hover {
+                            background: var(--sage-soft);
+                            color: var(--evergreen);
+                            border-color: var(--sage);
+                        }
+
+                        .ba-act-btn--feat:hover {
+                            background: rgba(188, 127, 55, .15);
+                            color: var(--honey);
+                            border-color: var(--honey);
+                        }
+
+                        /* Mobile actions (always visible on small screens) */
+                        .ba-item-mobile-actions {
+                            display: none;
+                            gap: 6px;
+                            padding-top: 10px;
+                            border-top: 1px solid var(--line);
+                            grid-column: 1 / -1;
+                            justify-content: flex-end;
+                        }
+
+
+
+                        /* Empty state */
+                        .ba-empty {
+                            text-align: center;
+                            padding: 60px 24px;
+                        }
+
+                        .ba-empty svg {
+                            margin: 0 auto 16px;
+                            opacity: .35;
+                        }
+
+                        .ba-empty h3 {
+                            font-size: 1.2rem;
+                            color: var(--evergreen);
+                            margin-bottom: 6px;
+                        }
+
+                        .ba-empty p {
+                            color: var(--ink-soft);
+                            font-size: .9rem;
+                            margin-bottom: 20px;
+                        }
+
+                        /* ===== Editor Modal ===== */
+                        .ba-modal-overlay {
+                            position: fixed;
+                            inset: 0;
+                            z-index: 500;
+                            width: 100%;
+                            background: rgba(22, 48, 42, .55);
+                            backdrop-filter: blur(8px);
+                            -webkit-backdrop-filter: blur(8px);
+                            display: flex;
+                            align-items: flex-start;
+                            justify-content: center;
+                            padding: 30px 16px;
+                            overflow-y: auto;
+                            opacity: 0;
+                            visibility: hidden;
+                            transition: opacity .4s var(--ease), visibility .4s;
+                        }
+
+                        .ba-modal-overlay.open {
+                            opacity: 1;
+                            visibility: visible;
+                        }
+
+                        .ba-modal {
+                            background: var(--surface);
+                            border-radius: 24px;
+                            max-width: 100%;
+                            width: 100%;
+                            max-height: calc(100vh - 60px);
+                            box-shadow: 0 40px 100px -30px rgba(22, 48, 42, .6);
+                            transform: translateY(24px) scale(.97);
+                            transition: transform .5s var(--ease);
+                            overflow-y: auto;
+                            margin-bottom: 40px;
+                        }
+
+                        .ba-modal-overlay.open .ba-modal {
+                            transform: translateY(0) scale(1);
+                        }
+
+                        .ba-modal-header {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            padding: 20px 28px;
+                            border-bottom: 1px solid var(--line);
+                            position: sticky;
+                            top: 0;
+                            background: var(--surface);
+                            z-index: 5;
+                        }
+
+                        .ba-modal-header h2 {
+                            font-size: 1.2rem;
+                            color: var(--evergreen);
+                        }
+
+                        .ba-modal-close {
+                            width: 38px;
+                            height: 38px;
+                            border-radius: 50%;
+                            border: none;
+                            background: rgba(22, 48, 42, .08);
+                            color: var(--ink-soft);
+                            cursor: pointer;
+                            display: grid;
+                            place-items: center;
+                            font-size: 1.2rem;
+                            transition: background .3s, transform .3s;
+                        }
+
+                        .ba-modal-close:hover {
+                            background: var(--honey);
+                            color: #fff;
+                            transform: rotate(90deg);
+                        }
+
+                        .ba-modal-body {
+                            padding: 24px 28px 40px;
+                        }
+
+                        /* Form fields */
+                        .ba-field {
+                            margin-bottom: 18px;
+                        }
+
+                        .ba-field label {
+                            display: block;
+                            font-size: .76rem;
+                            font-weight: 700;
+                            letter-spacing: .06em;
+                            text-transform: uppercase;
+                            color: var(--evergreen);
+                            margin-bottom: 6px;
+                        }
+
+                        .ba-field input,
+                        .ba-field select {
+                            width: 100%;
+                            padding: .72em 1em;
+                            border: 1px solid var(--line);
+                            border-radius: 12px;
+                            background: var(--bone);
+                            font-family: "Mulish", sans-serif;
+                            font-size: .9rem;
+                            color: var(--ink);
+                            transition: border-color .3s, box-shadow .3s;
+                        }
+
+                        .ba-field input:focus,
+                        .ba-field select:focus {
+                            outline: none;
+                            border-color: var(--honey);
+                            box-shadow: 0 0 0 3px rgba(188, 127, 55, .12);
+                        }
+
+                        .ba-row {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 14px;
+                        }
+
+                        .ba-row-3 {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr 1fr;
+                            gap: 14px;
+                        }
+
+                        /* Theme picker */
+                        .ba-themes {
+                            display: grid;
+                            grid-template-columns: repeat(6, 1fr);
+                            gap: 8px;
+                        }
+
+                        .ba-theme-opt {
+                            aspect-ratio: 1;
+                            border-radius: 12px;
+                            cursor: pointer;
+                            border: 2px solid transparent;
+                            transition: border-color .25s, transform .25s, box-shadow .25s;
+                            position: relative;
+                            overflow: hidden;
+                        }
+
+                        .ba-theme-opt:hover {
+                            transform: scale(1.08);
+                        }
+
+                        .ba-theme-opt.active {
+                            border-color: var(--honey);
+                            box-shadow: 0 0 0 3px rgba(188, 127, 55, .2);
+                        }
+
+                        .ba-theme-opt span {
+                            position: absolute;
+                            bottom: 0;
+                            left: 0;
+                            right: 0;
+                            font-size: .55rem;
+                            font-weight: 700;
+                            text-align: center;
+                            padding: 2px;
+                            background: rgba(0, 0, 0, .35);
+                            color: #fff;
+                            letter-spacing: .03em;
+                            text-transform: uppercase;
+                        }
+
+                        /* Color picker */
+                        .ba-color-row {
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                        }
+
+                        .ba-color-row input[type="color"] {
+                            width: 44px;
+                            height: 36px;
+                            border: 1px solid var(--line);
+                            border-radius: 8px;
+                            padding: 2px;
+                            cursor: pointer;
+                            background: var(--bone);
+                            flex: none;
+                        }
+
+                        .ba-color-row input[type="text"] {
+                            flex: 1;
+                        }
+
+                        /* Quill overrides */
+                        .ql-toolbar.ql-snow {
+                            border: 1px solid var(--line) !important;
+                            border-radius: 12px 12px 0 0 !important;
+                            background: var(--bone) !important;
+                            padding: 8px !important;
+                        }
+
+                        .ql-container.ql-snow {
+                            border: 1px solid var(--line) !important;
+                            border-top: none !important;
+                            border-radius: 0 0 12px 12px !important;
+                            font-family: "Mulish", sans-serif !important;
+                            font-size: 15px !important;
+                            min-height: 280px;
+                            line-height: 1.7;
+                        }
+
+                        .ql-editor {
+                            min-height: 280px;
+                        }
+
+                        .ql-editor blockquote {
+                            border-left: 3px solid var(--honey) !important;
+                            padding-left: 1em !important;
+                            font-style: italic !important;
+                            color: var(--evergreen-2) !important;
+                        }
+
+                        .ql-snow .ql-stroke {
+                            stroke: var(--ink-soft) !important;
+                        }
+
+                        .ql-snow .ql-fill {
+                            fill: var(--ink-soft) !important;
+                        }
+
+                        .ql-snow .ql-picker-label {
+                            color: var(--ink-soft) !important;
+                        }
+
+                        .ql-snow .ql-picker-options {
+                            background: var(--surface) !important;
+                            border-color: var(--line) !important;
+                            border-radius: 10px !important;
+                        }
+
+                        .ql-toolbar .ql-formats {
+                            margin-right: 12px !important;
+                        }
+
+                        .ql-toolbar button:hover .ql-stroke {
+                            stroke: var(--honey) !important;
+                        }
+
+                        .ql-toolbar button:hover .ql-fill {
+                            fill: var(--honey) !important;
+                        }
+
+                        .ql-toolbar button.ql-active .ql-stroke {
+                            stroke: var(--honey) !important;
+                        }
+
+                        .ql-toolbar button.ql-active .ql-fill {
+                            fill: var(--honey) !important;
+                        }
+
+                        /* Excerpt */
+                        .ba-excerpt-area {
+                            width: 100%;
+                            padding: .72em 1em;
+                            border: 1px solid var(--line);
+                            border-radius: 12px;
+                            background: var(--bone);
+                            font-family: "Mulish", sans-serif;
+                            font-size: .9rem;
+                            color: var(--ink);
+                            resize: vertical;
+                            min-height: 70px;
+                            transition: border-color .3s, box-shadow .3s;
+                        }
+
+                        .ba-excerpt-area:focus {
+                            outline: none;
+                            border-color: var(--honey);
+                            box-shadow: 0 0 0 3px rgba(188, 127, 55, .12);
+                        }
+
+                        /* Modal footer */
+                        .ba-modal-footer {
+                            display: flex;
+                            align-items: center;
+                            justify-content: flex-end;
+                            gap: 10px;
+                            padding: 18px 28px;
+                            border-top: 1px solid var(--line);
+                            background: var(--bone);
+                        }
+
+                        .ba-save-btn {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 8px;
+                            font-family: "Mulish", sans-serif;
+                            font-weight: 600;
+                            font-size: .9rem;
+                            padding: .75em 1.8em;
+                            border-radius: 100px;
+                            border: none;
+                            cursor: pointer;
+                            transition: transform .35s var(--ease), background .3s, box-shadow .35s;
+                        }
+
+                        .ba-save-btn--primary {
+                            background: var(--honey);
+                            color: #fff;
+                            box-shadow: 0 10px 24px -10px rgba(188, 127, 55, .7);
+                        }
+
+                        .ba-save-btn--primary:hover {
+                            transform: translateY(-2px);
+                            background: #a96f2c;
+                        }
+
+                        .ba-save-btn--primary:disabled {
+                            opacity: .6;
+                            cursor: not-allowed;
+                            transform: none;
+                        }
+
+                        .ba-save-btn--ghost {
+                            background: transparent;
+                            color: var(--ink-soft);
+                            border: 1px solid var(--line);
+                        }
+
+                        .ba-save-btn--ghost:hover {
+                            background: rgba(22, 48, 42, .04);
+                        }
+
+                        /* ===== Tags Modal ===== */
+                        .tags-modal .ba-modal {
+                            max-width: 100%;
+                        }
+
+                        .tags-list {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 8px;
+                            margin-bottom: 18px;
+                            max-height: 400px;
+                            overflow-y: auto;
+                        }
+
+                        .tag-row {
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                            padding: 10px 14px;
+                            background: var(--bone);
+                            border-radius: 12px;
+                            border: 1px solid var(--line);
+                            transition: border-color .25s;
+                        }
+
+                        .tag-row:hover {
+                            border-color: var(--sage);
+                        }
+
+                        .tag-row input {
+                            flex: 1;
+                            border: none;
+                            background: transparent;
+                            font-family: "Mulish", sans-serif;
+                            font-size: .9rem;
+                            color: var(--ink);
+                            padding: 4px 0;
+                        }
+
+                        .tag-row input:focus {
+                            outline: none;
+                        }
+
+                        .tag-row .tag-slug {
+                            font-size: .72rem;
+                            color: var(--ink-soft);
+                            font-weight: 500;
+                            min-width: 90px;
+                        }
+
+                        .tag-save-btn,
+                        .tag-del-btn {
+                            width: 30px;
+                            height: 30px;
+                            border-radius: 8px;
+                            border: 1px solid var(--line);
+                            background: var(--surface);
+                            color: var(--ink-soft);
+                            display: grid;
+                            place-items: center;
+                            cursor: pointer;
+                            transition: all .25s;
+                            flex: none;
+                        }
+
+                        .tag-save-btn:hover {
+                            background: var(--sage-soft);
+                            color: var(--evergreen);
+                            border-color: var(--sage);
+                        }
+
+                        .tag-del-btn:hover {
+                            background: #f5e0e0;
+                            color: #b94a48;
+                            border-color: #e8b0b0;
+                        }
+
+                        .add-tag-row {
+                            display: flex;
+                            gap: 8px;
+                        }
+
+                        .add-tag-row input {
+                            flex: 1;
+                            padding: .65em 1em;
+                            border: 1px solid var(--line);
+                            border-radius: 12px;
+                            background: var(--bone);
+                            font-family: "Mulish", sans-serif;
+                            font-size: .88rem;
+                            color: var(--ink);
+                            transition: border-color .3s, box-shadow .3s;
+                        }
+
+                        .add-tag-row input:focus {
+                            outline: none;
+                            border-color: var(--honey);
+                            box-shadow: 0 0 0 3px rgba(188, 127, 55, .12);
+                        }
+
+                        /* ===== Toast ===== */
+                        .ba-toast {
+                            position: fixed;
+                            bottom: 30px;
+                            left: 50%;
+                            transform: translateX(-50%) translateY(20px);
+                            background: var(--evergreen);
+                            color: var(--bone);
+                            padding: .75em 1.5em;
+                            border-radius: 100px;
+                            font-family: "Mulish", sans-serif;
+                            font-size: .85rem;
+                            font-weight: 600;
+                            box-shadow: 0 12px 30px -10px rgba(22, 48, 42, .5);
+                            z-index: 600;
+                            opacity: 0;
+                            visibility: hidden;
+                            transition: opacity .35s var(--ease), transform .35s var(--ease), visibility .35s;
+                            pointer-events: none;
+                        }
+
+                        .ba-toast.show {
+                            opacity: 1;
+                            visibility: visible;
+                            transform: translateX(-50%) translateY(0);
+                        }
+
+                        /* ===== Confirm dialog ===== */
+                        .ba-confirm-overlay {
+                            position: fixed;
+                            inset: 0;
+                            z-index: 550;
+                            background: rgba(22, 48, 42, .5);
+                            backdrop-filter: blur(4px);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 20px;
+                            opacity: 0;
+                            visibility: hidden;
+                            transition: opacity .3s, visibility .3s;
+                        }
+
+                        .ba-confirm-overlay.open {
+                            opacity: 1;
+                            visibility: visible;
+                        }
+
+                        .ba-confirm-box {
+                            background: var(--surface);
+                            border-radius: 20px;
+                            padding: 28px;
+                            max-width: 380px;
+                            width: 100%;
+                            text-align: center;
+                            box-shadow: var(--shadow);
+                            transform: scale(.95);
+                            transition: transform .35s var(--ease);
+                        }
+
+                        .ba-confirm-overlay.open .ba-confirm-box {
+                            transform: scale(1);
+                        }
+
+                        .ba-confirm-box h3 {
+                            font-size: 1.1rem;
+                            color: var(--evergreen);
+                            margin-bottom: 8px;
+                        }
+
+                        .ba-confirm-box p {
+                            font-size: .88rem;
+                            color: var(--ink-soft);
+                            margin-bottom: 20px;
+                        }
+
+                        .ba-confirm-btns {
+                            display: flex;
+                            gap: 10px;
+                            justify-content: center;
+                        }
+
+                        /* ===== Responsive ===== */
+                        @media(max-width: 768px) {
+                            .ba-item {
+                                grid-template-columns: 120px 1fr;
+                                gap: 12px;
+                            }
+
+                            .ba-item-actions {
+                                display: none !important;
+                            }
+
+                            .ba-item-mobile-actions {
+                                display: flex !important;
+                            }
+
+                            .ba-themes {
+                                grid-template-columns: repeat(4, 1fr);
+                            }
+
+                            .ba-row {
+                                grid-template-columns: 1fr;
+                            }
+
+                            .ba-row-3 {
+                                grid-template-columns: 1fr 1fr;
+                            }
+
+                            .ba-modal-body {
+                                padding: 18px 16px 22px;
+                            }
+
+                            .ba-modal-header {
+                                padding: 16px 18px;
+                            }
+
+                            .ba-modal-footer {
+                                padding: 14px 18px;
+                            }
+                        }
+
+                        @media(max-width: 480px) {
+                            .ba-item {
+                                grid-template-columns: 1fr;
+                            }
+
+                            .ba-item-thumb {
+                                height: 140px;
+                            }
+
+                            .ba-themes {
+                                grid-template-columns: repeat(3, 1fr);
+                            }
+
+                            .ba-row-3 {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+                    </style>
+
+                    <!-- Header -->
+                    <div class="ba-header">
+                        <div class="ba-actions">
+                            <button class="ba-btn ba-btn--primary" id="baNewBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" stroke-linecap="round">
+                                    <line x1="12" x2="12" y1="5" y2="19" />
+                                    <line x1="5" x2="19" y1="12" y2="12" />
+                                </svg>
+                                New Blog
+                            </button>
+                            <button class="ba-btn ba-btn--ghost" id="baTagsBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round">
+                                    <path
+                                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                </svg>
+                                Tags
+                            </button>
+
+
+                            <!-- Authors Button -->
+                            <button class="ba-btn ba-btn--ghost" id="baAuthorsBtn" aria-label="Manage authors">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <line x1="19" x2="19" y1="8" y2="14" />
+                                    <line x1="22" x2="16" y1="11" y2="11" />
+                                </svg>
+                            </button>
+                            <!-- Mobile Menu Toggle Button -->
+                            <button class="ba-btn ba-btn--ghost ba-mobile-only" id="baMobileMenuBtn"
+                                aria-label="Toggle menu">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round">
+                                    <line x1="4" y1="7" x2="20" y2="7" />
+                                    <line x1="4" y1="12" x2="20" y2="12" />
+                                    <line x1="4" y1="17" x2="20" y2="17" />
+                                </svg>
+                            </button>
+
+                        </div>
+                        <div class="ba-count"><b id="baCountNum">0</b> blogs</div>
+                    </div>
+                    <!-- Authors Modal -->
+                    <div class="ba-modal-overlay authors-modal" id="authorsModal">
+                        <div class="ba-modal">
+                            <div class="ba-modal-header">
+                                <h2>Authors</h2>
+                                <button class="ba-modal-close" id="authorsModalClose" aria-label="Close">✕</button>
+                            </div>
+                            <div class="ba-modal-body">
+                                <!-- Add Author Form -->
+                                <div class="ba-authors-form">
+                                    <div class="ba-row">
+                                        <div class="ba-field">
+                                            <label>Author Name</label>
+                                            <input type="text" id="authorNameInput">
+                                        </div>
+                                        <div class="ba-field">
+                                            <label>Role / Title</label>
+                                            <input type="text" id="authorRoleInput">
+                                        </div>
+                                    </div>
+                                    <button class="ba-btn ba-btn--primary ba-add-author-btn" id="addAuthorBtn">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                            <line x1="12" x2="12" y1="5" y2="19" />
+                                            <line x1="5" x2="19" y1="12" y2="12" />
+                                        </svg>
+                                        Add Author
+                                    </button>
+                                </div>
+                                <!-- Authors List -->
+                                <div class="ba-authors-list" id="authorsList">
+                                    <!-- Authors will be rendered here -->
+                                </div>
+                                <div class="ba-authors-empty" id="authorsEmpty">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg>
+                                    <p>No authors added yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Blog list -->
+                    <div class="ba-list" id="baList">
+                        <div style="text-align:center;padding:40px;color:var(--ink-soft);font-size:.9rem;">Loading
+                            blogs...</div>
+                    </div>
+
+                    <!-- Editor Modal -->
+                    <div class="ba-modal-overlay" id="baEditorModal">
+                        <div class="ba-modal">
+                            <div class="ba-modal-header">
+                                <h2 id="baEditorTitle">New Blog Post</h2>
+                                <button class="ba-modal-close" id="baEditorClose">&times;</button>
+                            </div>
+                            <div class="ba-modal-body">
+                                <input type="hidden" id="baEditId" value="">
+                                <div class="ba-field">
+                                    <label>Title</label>
+                                    <input type="text" id="baTitle" placeholder="Enter blog title">
+                                </div>
+                                <div class="ba-row">
+                                    <div class="ba-field">
+                                        <label>Author</label>
+                                        <input type="text" id="baAuthor" placeholder="Author name">
+                                    </div>
+                                    <div class="ba-field">
+                                        <label>Author Role</label>
+                                        <input type="text" id="baAuthorRole" placeholder="e.g. Counsellor">
+                                    </div>
+                                </div>
+                                <div class="ba-row-3">
+                                    <div class="ba-field">
+                                        <label>Date</label>
+                                        <input type="date" id="baDate">
+                                    </div>
+                                    <div class="ba-field">
+                                        <label>Reading Time</label>
+                                        <input type="text" id="baReadTime" placeholder="e.g. 5 min read">
+                                    </div>
+                                    <div class="ba-field">
+                                        <label>Tag / Category</label>
+                                        <select id="baTag"></select>
+                                    </div>
+                                </div>
+                                <div class="ba-field">
+                                    <label>Excerpt</label>
+                                    <textarea class="ba-excerpt-area" id="baExcerpt"
+                                        placeholder="Short summary for the blog card..."></textarea>
+                                </div>
+                                <div class="ba-field">
+                                    <label>Theme</label>
+                                    <div class="ba-themes" id="baThemes"></div>
+                                </div>
+                                <div class="ba-field">
+                                    <label>Text Color (optional)</label>
+                                    <div class="ba-color-row">
+                                        <input type="color" id="baTextColorPicker" value="#21302b">
+                                        <input type="text" id="baTextColor" placeholder="#21302b" value="">
+                                    </div>
+                                </div>
+                                <div class="ba-field">
+                                    <label>Content</label>
+                                    <div id="baQuillEditor"></div>
+                                </div>
+                            </div>
+                            <div class="ba-modal-footer">
+                                <button class="ba-save-btn ba-save-btn--ghost" id="baCancelBtn">Cancel</button>
+                                <button class="ba-save-btn ba-save-btn--primary" id="baSaveBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5" stroke-linecap="round">
+                                        <path d="M20 6 9 17l-5-5" />
+                                    </svg>
+                                    Save Blog
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tags Modal -->
+                    <div class="ba-modal-overlay tags-modal" id="baTagsModal">
+                        <div class="ba-modal">
+                            <div class="ba-modal-header">
+                                <h2>Manage Tags</h2>
+                                <button class="ba-modal-close" id="baTagsClose">&times;</button>
+                            </div>
+                            <div class="ba-modal-body">
+                                <div class="tags-list" id="baTagsList"></div>
+                                <div class="add-tag-row">
+                                    <input type="text" id="baNewTagName" placeholder="New tag name">
+                                    <button class="ba-btn ba-btn--primary" id="baAddTagBtn"
+                                        style="flex:none;">Add</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Confirm dialog -->
+                    <div class="ba-confirm-overlay" id="baConfirm">
+                        <div class="ba-confirm-box">
+                            <h3 id="baConfirmTitle">Delete blog?</h3>
+                            <p id="baConfirmMsg">This action cannot be undone.</p>
+                            <div class="ba-confirm-btns">
+                                <button class="ba-save-btn ba-save-btn--ghost" id="baConfirmCancel">Cancel</button>
+                                <button class="ba-save-btn ba-save-btn--primary" id="baConfirmOk"
+                                    style="background:#b94a48;box-shadow:0 10px 24px -10px rgba(185,74,72,.6);">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Toast -->
+                    <div class="ba-toast" id="baToast"></div>
+
+                    <!-- ===== UNSAVED CHANGES CONFIRMATION ===== -->
+                    <style>
+                        .ba-confirm-overlay {
+                            position: fixed;
+                            inset: 0;
+                            z-index: 600;
+                            background: rgba(22, 48, 42, .6);
+                            backdrop-filter: blur(6px);
+                            -webkit-backdrop-filter: blur(6px);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            opacity: 0;
+                            visibility: hidden;
+                            transition: opacity .3s var(--ease), visibility .3s;
+                        }
+
+                        .ba-confirm-overlay.open {
+                            opacity: 1;
+                            visibility: visible;
+                        }
+
+                        .ba-confirm-box {
+                            background: var(--surface);
+                            border-radius: 20px;
+                            padding: 32px 28px 24px;
+                            max-width: 360px;
+                            width: calc(100% - 40px);
+                            text-align: center;
+                            box-shadow: 0 30px 80px -20px rgba(22, 48, 42, .6);
+                            transform: scale(.95);
+                            transition: transform .35s var(--ease);
+                        }
+
+                        .ba-confirm-overlay.open .ba-confirm-box {
+                            transform: scale(1);
+                        }
+
+                        .ba-confirm-icon {
+                            width: 48px;
+                            height: 48px;
+                            border-radius: 50%;
+                            background: rgba(188, 127, 55, .12);
+                            display: grid;
+                            place-items: center;
+                            margin: 0 auto 16px;
+                            color: var(--honey);
+                        }
+
+                        .ba-confirm-box h3 {
+                            font-size: 1.1rem;
+                            color: var(--evergreen);
+                            margin-bottom: 6px;
+                        }
+
+                        .ba-confirm-box p {
+                            font-size: .88rem;
+                            color: var(--ink-soft);
+                            margin-bottom: 22px;
+                            line-height: 1.5;
+                        }
+
+                        .ba-confirm-actions {
+                            display: flex;
+                            gap: 10px;
+                            justify-content: center;
+                        }
+
+                        .ba-confirm-cancel,
+                        .ba-confirm-close {
+                            flex: 1;
+                            padding: .72em 1.2em;
+                            border-radius: 100px;
+                            font-family: "Mulish", sans-serif;
+                            font-weight: 600;
+                            font-size: .85rem;
+                            cursor: pointer;
+                            transition: transform .25s var(--ease), background .3s, box-shadow .3s, color .3s;
+                        }
+
+                        .ba-confirm-cancel {
+                            border: 1px solid var(--line);
+                            background: transparent;
+                            color: var(--evergreen);
+                        }
+
+                        .ba-confirm-cancel:hover {
+                            transform: translateY(-1px);
+                            border-color: var(--evergreen);
+                            background: rgba(22, 48, 42, .04);
+                        }
+
+                        .ba-confirm-close {
+                            border: none;
+                            background: #b94a48;
+                            color: #fff;
+                            box-shadow: 0 8px 20px -8px rgba(185, 74, 72, .6);
+                        }
+
+                        .ba-confirm-close:hover {
+                            transform: translateY(-1px);
+                            background: #a03a38;
+                            box-shadow: 0 12px 28px -8px rgba(185, 74, 72, .7);
+                        }
+                    </style>
+
+                    <div id="baConfirmOverlay" class="ba-confirm-overlay">
+                        <div class="ba-confirm-box">
+                            <div class="ba-confirm-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" x2="12" y1="8" y2="12" />
+                                    <line x1="12" x2="12.01" y1="16" y2="16" />
+                                </svg>
+                            </div>
+                            <h3>Unsaved Changes</h3>
+                            <p>Your changes will be lost. Are you sure you want to close?</p>
+                            <div class="ba-confirm-actions">
+                                <button class="ba-confirm-cancel" id="baConfirmCancel">Cancel</button>
+                                <button class="ba-confirm-close" id="baConfirmClose">Close</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        (function () {
+                            /* --- Snapshot tracking --- */
+                            var _snap = '';
+
+                            function getFormState(container) {
+                                var s = '';
+                                if (!container) return s;
+                                container.querySelectorAll('input,select,textarea').forEach(function (el) {
+                                    if (el.type === 'color') s += el.name + '=' + el.value + '|';
+                                    else if (el.type === 'checkbox') s += el.name + '=' + el.checked + '|';
+                                    else s += el.name + '=' + el.value + '|';
+                                });
+                                if (window.quillInstance) s += '_quill=' + window.quillInstance.root.innerHTML + '|';
+                                var at = container.querySelector('.ba-theme-opt.active');
+                                if (at) s += '_theme=' + (at.dataset.theme || at.dataset.val || '') + '|';
+                                return s;
+                            }
+
+                            function saveSnap() {
+                                var m = document.querySelector('.ba-modal-overlay.open');
+                                if (!m) return;
+                                var b = m.querySelector('.ba-modal-body');
+                                _snap = getFormState(b);
+                            }
+
+                            function isDirty() {
+                                var m = document.querySelector('.ba-modal-overlay.open');
+                                if (!m) return false;
+                                return getFormState(m.querySelector('.ba-modal-body')) !== _snap;
+                            }
+
+                            /* --- Auto-save snapshot when modal opens (edit populates fields) --- */
+                            var mo = new MutationObserver(function (mutations) {
+                                mutations.forEach(function (m) {
+                                    if (m.attributeName !== 'class') return;
+                                    var el = m.target;
+                                    if (el.classList.contains('ba-modal-overlay') && el.classList.contains('open')) {
+                                        setTimeout(saveSnap, 350);
+                                    }
+                                });
+                            });
+                            mo.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+
+                            /* --- Block overlay click from closing modal --- */
+                            document.addEventListener('mousedown', function (e) {
+                                if (e.target.classList.contains('ba-modal-overlay')) e.stopPropagation();
+                            }, true);
+                            document.addEventListener('click', function (e) {
+                                if (e.target.classList.contains('ba-modal-overlay')) e.stopPropagation();
+                            }, true);
+
+                            /* --- Close button: show confirm if dirty --- */
+                            document.addEventListener('click', function (e) {
+                                var btn = e.target.closest('.ba-modal-close');
+                                if (!btn) return;
+                                if (isDirty()) {
+                                    document.getElementById('baConfirmOverlay').classList.add('open');
+                                } else {
+                                    var modal = btn.closest('.ba-modal-overlay');
+                                    if (modal) modal.classList.remove('open');
+                                    _snap = '';
+                                }
+                            });
+
+                            /* --- Confirm dialog buttons --- */
+                            document.getElementById('baConfirmCancel').addEventListener('click', function () {
+                                document.getElementById('baConfirmOverlay').classList.remove('open');
+                            });
+
+                            document.getElementById('baConfirmClose').addEventListener('click', function () {
+                                document.getElementById('baConfirmOverlay').classList.remove('open');
+                                var modal = document.querySelector('.ba-modal-overlay.open');
+                                if (modal) modal.classList.remove('open');
+                                _snap = '';
+                            });
+
+                            /* --- Also block Escape key from closing without confirm --- */
+                            document.addEventListener('keydown', function (e) {
+                                if (e.key !== 'Escape') return;
+                                var confirm = document.getElementById('baConfirmOverlay');
+                                if (confirm.classList.contains('open')) {
+                                    confirm.classList.remove('open');
+                                    return;
+                                }
+                                var modal = document.querySelector('.ba-modal-overlay.open');
+                                if (!modal) return;
+                                if (isDirty()) {
+                                    confirm.classList.add('open');
+                                } else {
+                                    modal.classList.remove('open');
+                                    _snap = '';
+                                }
+                            });
+                        })();
+                    </script>
+
+                    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+                    <script>
+                        (function () {
+                            /* ===== Theme definitions (same as blog page) ===== */
+                            var THEMES = [
+                                { key: 'forest', name: 'Forest', g1: '#2d5a4e', g2: '#1f4338' },
+                                { key: 'meadow', name: 'Meadow', g1: '#dfe6dc', g2: '#b8c9b3' },
+                                { key: 'sandstone', name: 'Sandstone', g1: '#ece4d4', g2: '#d4c4a8' },
+                                { key: 'golden', name: 'Golden', g1: '#f6d99f', g2: '#e8c79a' },
+                                { key: 'midnight', name: 'Midnight', g1: '#1f4338', g2: '#16302a' },
+                                { key: 'mist', name: 'Mist', g1: '#eef2ea', g2: '#dfe6dc' },
+                                { key: 'clay', name: 'Clay', g1: '#e0d0c0', g2: '#c8b098' },
+                                { key: 'ocean', name: 'Ocean', g1: '#d0e0d8', g2: '#a8c4b4' },
+                                { key: 'lavender', name: 'Lavender', g1: '#e0d8e8', g2: '#c8b8d8' },
+                                { key: 'rose', name: 'Rose', g1: '#e8d8d4', g2: '#d4b8b0' },
+                                { key: 'slate', name: 'Slate', g1: '#d8dce0', g2: '#b8c0c8' },
+                                { key: 'cream', name: 'Cream', g1: '#f4efe5', g2: '#ece4d4' }
+                            ];
+
+                            function simpleHash(s) { var h = 0; for (var i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; } return Math.abs(h); }
+
+                            /* Mini SVG for admin thumbnails */
+                            function miniSVG(themeKey, seed) {
+                                var t = THEMES.find(function (th) { return th.key === themeKey; }) || THEMES[0];
+                                var v = simpleHash(seed) % 3;
+                                var s = '<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">';
+                                s += '<defs><linearGradient id="m' + seed.replace(/[^a-z0-9]/gi, '').substring(0, 6) + '" x1="0" y1="0" x2="1" y2="1">';
+                                s += '<stop offset="0%" stop-color="' + t.g1 + '"/><stop offset="100%" stop-color="' + t.g2 + '"/>';
+                                s += '</linearGradient></defs>';
+                                s += '<rect width="400" height="300" fill="url(#m' + seed.replace(/[^a-z0-9]/gi, '').substring(0, 6) + ')"/>';
+                                if (v === 0) { s += '<circle cx="200" cy="150" r="60" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2"/><circle cx="200" cy="150" r="30" fill="rgba(255,255,255,0.06)"/>'; }
+                                else if (v === 1) { s += '<path d="M80 200 Q200 120 320 200" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2"/><path d="M60 230 Q200 170 340 230" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>'; }
+                                else { s += '<rect x="120" y="90" width="160" height="120" rx="16" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/><line x1="150" y1="130" x2="250" y2="130" stroke="rgba(255,255,255,0.08)" stroke-width="2"/><line x1="150" y1="160" x2="230" y2="160" stroke="rgba(255,255,255,0.06)" stroke-width="2"/>'; }
+                                s += '</svg>';
+                                return s;
+                            }
+
+                            /* ===== State ===== */
+                            var adminBlogs = [];
+                            var adminTags = [];
+                            var quillInstance = null;
+                            var selectedTheme = 'forest';
+                            var confirmCallback = null;
+
+                            /* ===== DOM ===== */
+                            var baList = document.getElementById('baList');
+                            var baCountNum = document.getElementById('baCountNum');
+                            var baEditorModal = document.getElementById('baEditorModal');
+                            var baTagsModal = document.getElementById('baTagsModal');
+                            var baConfirm = document.getElementById('baConfirm');
+                            var baToast = document.getElementById('baToast');
+                            var baThemesDiv = document.getElementById('baThemes');
+                            var baTagSelect = document.getElementById('baTag');
+
+                            /* ===== Toast ===== */
+                            function showToast(msg) {
+                                baToast.textContent = msg;
+                                baToast.classList.add('show');
+                                setTimeout(function () { baToast.classList.remove('show'); }, 2500);
+                            }
+
+                            /* ===== Confirm dialog ===== */
+                            function showConfirm(title, msg, cb) {
+                                document.getElementById('baConfirmTitle').textContent = title;
+                                document.getElementById('baConfirmMsg').textContent = msg;
+                                confirmCallback = cb;
+                                baConfirm.classList.add('open');
+                            }
+                            document.getElementById('baConfirmCancel').addEventListener('click', function () { baConfirm.classList.remove('open'); confirmCallback = null; });
+                            document.getElementById('baConfirmOk').addEventListener('click', function () {
+                                baConfirm.classList.remove('open');
+                                if (confirmCallback) confirmCallback();
+                                confirmCallback = null;
+                            });
+                            baConfirm.addEventListener('click', function (e) { if (e.target === baConfirm) { baConfirm.classList.remove('open'); confirmCallback = null; } });
+
+                            /* ===== Load data ===== */
+                            async function loadBlogs() {
+                                try {
+                                    var snap = await db.collection('blogs').orderBy('position', 'asc').get();
+                                    adminBlogs = [];
+                                    snap.forEach(function (doc) { adminBlogs.push({ id: doc.id, ...doc.data() }); });
+                                    renderBlogList();
+                                } catch (e) { console.error(e); baList.innerHTML = '<div style="text-align:center;padding:40px;color:#b94a48;">Failed to load blogs.</div>'; }
+                            }
+
+                            async function loadTags() {
+                                try {
+                                    var snap = await db.collection('tags').orderBy('name', 'asc').get();
+                                    adminTags = [];
+                                    snap.forEach(function (doc) { adminTags.push({ id: doc.id, ...doc.data() }); });
+                                    renderTagSelect();
+                                } catch (e) { console.error(e); }
+                            }
+
+                            /* ===== Render blog list ===== */
+                            function renderBlogList() {
+                                baCountNum.textContent = adminBlogs.length;
+                                if (adminBlogs.length === 0) {
+                                    baList.innerHTML = '<div class="ba-empty"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg><h3>No blogs yet</h3><p>Click "New Blog" to create your first post.</p></div>';
+                                    return;
+                                }
+                                var html = '';
+                                adminBlogs.forEach(function (blog, idx) {
+                                    html += '<div class="ba-item" data-id="' + blog.id + '">';
+                                    html += '<div class="ba-item-thumb">' + miniSVG(blog.theme || 'forest', blog.id) + '</div>';
+                                    html += '<div class="ba-item-body">';
+                                    html += '<h3>' + esc(blog.title) + '</h3>';
+                                    html += '<p>' + esc(blog.excerpt || '') + '</p>';
+                                    html += '<div class="ba-item-meta">';
+                                    html += '<span>' + esc(blog.author || '') + '</span>';
+                                    html += '<span style="color:var(--sage)">&middot;</span>';
+                                    html += '<span>' + esc(blog.date || '') + '</span>';
+                                    html += '<span style="color:var(--sage)">&middot;</span>';
+                                    html += '<span>' + esc(blog.readingTime || '') + '</span>';
+                                    if (blog.tag) html += '<span class="ba-tag">' + esc(blog.tag) + '</span>';
+                                    if (blog.featured) html += '<span class="ba-featured-tag">Featured</span>';
+                                    html += '</div></div>';
+                                    /* Desktop actions */
+                                    html += '<div class="ba-item-actions">';
+                                    if (idx > 0) html += '<button class="ba-act-btn ba-act-btn--up" data-action="up" data-id="' + blog.id + '" title="Move up"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m18 15-6-6-6 6"/></svg></button>';
+                                    if (idx < adminBlogs.length - 1) html += '<button class="ba-act-btn ba-act-btn--down" data-action="down" data-id="' + blog.id + '" title="Move down"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>';
+                                    if (!blog.featured) html += '<button class="ba-act-btn ba-act-btn--feat" data-action="feat" data-id="' + blog.id + '" title="Set as featured"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>';
+                                    html += '<button class="ba-act-btn ba-act-btn--edit" data-action="edit" data-id="' + blog.id + '" title="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>';
+                                    html += '<button class="ba-act-btn ba-act-btn--delete" data-action="delete" data-id="' + blog.id + '" title="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>';
+                                    html += '</div>';
+                                    /* Mobile actions */
+                                    html += '<div class="ba-item-mobile-actions">';
+                                    if (idx > 0) html += '<button class="ba-act-btn ba-act-btn--up" data-action="up" data-id="' + blog.id + '"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m18 15-6-6-6 6"/></svg></button>';
+                                    if (idx < adminBlogs.length - 1) html += '<button class="ba-act-btn ba-act-btn--down" data-action="down" data-id="' + blog.id + '"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>';
+                                    if (!blog.featured) html += '<button class="ba-act-btn ba-act-btn--feat" data-action="feat" data-id="' + blog.id + '"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>';
+                                    html += '<button class="ba-act-btn ba-act-btn--edit" data-action="edit" data-id="' + blog.id + '"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>';
+                                    html += '<button class="ba-act-btn ba-act-btn--delete" data-action="delete" data-id="' + blog.id + '"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>';
+                                    html += '</div>';
+                                    html += '</div>';
+                                });
+                                baList.innerHTML = html;
+                            }
+
+                            /* ===== Blog list actions (event delegation) ===== */
+                            baList.addEventListener('click', function (e) {
+                                var btn = e.target.closest('[data-action]');
+                                if (!btn) return;
+                                var action = btn.dataset.action;
+                                var id = btn.dataset.id;
+                                if (action === 'edit') editBlog(id);
+                                else if (action === 'delete') deleteBlog(id);
+                                else if (action === 'feat') setFeatured(id);
+                                else if (action === 'up') moveBlog(id, -1);
+                                else if (action === 'down') moveBlog(id, 1);
+                            });
+
+                            /* ===== Move blog position ===== */
+                            async function moveBlog(id, dir) {
+                                var idx = adminBlogs.findIndex(function (b) { return b.id === id; });
+                                var swapIdx = idx + dir;
+                                if (swapIdx < 0 || swapIdx >= adminBlogs.length) return;
+                                var b1 = adminBlogs[idx], b2 = adminBlogs[swapIdx];
+                                var tmpPos = b1.position;
+                                try {
+                                    await db.collection('blogs').doc(b1.id).update({ position: b2.position });
+                                    await db.collection('blogs').doc(b2.id).update({ position: tmpPos });
+                                    adminBlogs[idx].position = b2.position;
+                                    adminBlogs[swapIdx].position = tmpPos;
+                                    adminBlogs.sort(function (a, b) { return a.position - b.position; });
+                                    renderBlogList();
+                                } catch (e) { console.error(e); showToast('Failed to reorder.'); }
+                            }
+
+                            /* ===== Set featured ===== */
+                            async function setFeatured(id) {
+                                var currentFeatured = adminBlogs.find(function (b) { return b.featured === true; });
+                                try {
+                                    var batch = db.batch();
+                                    if (currentFeatured) {
+                                        batch.update(db.collection('blogs').doc(currentFeatured.id), { featured: false });
+                                    }
+                                    batch.update(db.collection('blogs').doc(id), { featured: true });
+                                    await batch.commit();
+                                    adminBlogs.forEach(function (b) { b.featured = (b.id === id); });
+                                    renderBlogList();
+                                    showToast('Featured blog updated');
+                                } catch (e) { console.error(e); showToast('Failed to set featured.'); }
+                            }
+
+                            /* ===== Delete blog ===== */
+                            function deleteBlog(id) {
+                                var blog = adminBlogs.find(function (b) { return b.id === id; });
+                                if (!blog) return;
+                                showConfirm('Delete "' + blog.title + '"?', 'This action cannot be undone. The blog will be permanently removed.', async function () {
+                                    try {
+                                        await db.collection('blogs').doc(id).delete();
+                                        adminBlogs = adminBlogs.filter(function (b) { return b.id !== id; });
+                                        renderBlogList();
+                                        showToast('Blog deleted');
+                                    } catch (e) { console.error(e); showToast('Failed to delete.'); }
+                                });
+                            }
+
+                            /* ===== Theme picker ===== */
+                            function renderThemePicker(activeKey) {
+                                selectedTheme = activeKey || 'forest';
+                                var html = '';
+                                THEMES.forEach(function (t) {
+                                    html += '<div class="ba-theme-opt' + (t.key === selectedTheme ? ' active' : '') + '" data-theme="' + t.key + '" style="background:linear-gradient(135deg,' + t.g1 + ',' + t.g2 + ');">';
+                                    html += '<span>' + t.name + '</span></div>';
+                                });
+                                baThemesDiv.innerHTML = html;
+                            }
+                            baThemesDiv.addEventListener('click', function (e) {
+                                var opt = e.target.closest('.ba-theme-opt');
+                                if (!opt) return;
+                                selectedTheme = opt.dataset.theme;
+                                baThemesDiv.querySelectorAll('.ba-theme-opt').forEach(function (o) { o.classList.remove('active'); });
+                                opt.classList.add('active');
+                            });
+
+                            /* ===== Tag select ===== */
+                            function renderTagSelect() {
+                                var html = '<option value="">-- Select tag --</option>';
+                                adminTags.forEach(function (t) {
+                                    html += '<option value="' + esc(t.name) + '" data-slug="' + esc(t.slug) + '">' + esc(t.name) + '</option>';
+                                });
+                                baTagSelect.innerHTML = html;
+                            }
+
+                            /* ===== Text color sync ===== */
+                            var colorPicker = document.getElementById('baTextColorPicker');
+                            var colorText = document.getElementById('baTextColor');
+                            colorPicker.addEventListener('input', function () { colorText.value = this.value; });
+                            colorText.addEventListener('input', function () {
+                                if (/^#[0-9a-fA-F]{6}$/.test(this.value)) colorPicker.value = this.value;
+                            });
+
+                            /* ===== Editor modal ===== */
+                            function openEditor(blog) {
+                                document.getElementById('baEditorTitle').textContent = blog ? 'Edit Blog Post' : 'New Blog Post';
+                                document.getElementById('baEditId').value = blog ? blog.id : '';
+                                document.getElementById('baTitle').value = blog ? blog.title : '';
+                                document.getElementById('baAuthor').value = blog ? blog.author : '';
+                                document.getElementById('baAuthorRole').value = blog ? (blog.authorRole || '') : '';
+                                document.getElementById('baDate').value = blog ? (blog.dateISO || '') : new Date().toISOString().split('T')[0];
+                                document.getElementById('baReadTime').value = blog ? blog.readingTime : '';
+                                document.getElementById('baExcerpt').value = blog ? (blog.excerpt || '') : '';
+                                colorText.value = blog ? (blog.textColor || '') : '';
+                                colorPicker.value = blog ? (blog.textColor || '#21302b') : '#21302b';
+                                renderThemePicker(blog ? blog.theme : 'forest');
+
+                                /* Set tag */
+                                if (blog && blog.tag) {
+                                    for (var i = 0; i < baTagSelect.options.length; i++) {
+                                        if (baTagSelect.options[i].value === blog.tag) { baTagSelect.selectedIndex = i; break; }
+                                    }
+                                } else {
+                                    baTagSelect.selectedIndex = 0;
+                                }
+
+                                /* Set Quill content */
+                                if (quillInstance) {
+                                    if (blog && blog.content) {
+                                        quillInstance.root.innerHTML = blog.content;
+                                    } else {
+                                        quillInstance.setText('');
+                                    }
+                                }
+
+                                baEditorModal.classList.add('open');
+                                document.body.style.overflow = 'hidden';
+                            }
+
+                            function closeEditor() {
+                                baEditorModal.classList.remove('open');
+                                document.body.style.overflow = '';
+                            }
+
+                            function editBlog(id) {
+                                var blog = adminBlogs.find(function (b) { return b.id === id; });
+                                if (!blog) return;
+                                openEditor(blog);
+                            }
+
+                            /* ===== Save blog ===== */
+                            async function saveBlog() {
+                                var title = document.getElementById('baTitle').value.trim();
+                                var author = document.getElementById('baAuthor').value.trim();
+                                var authorRole = document.getElementById('baAuthorRole').value.trim();
+                                var dateISO = document.getElementById('baDate').value;
+                                var readingTime = document.getElementById('baReadTime').value.trim();
+                                var tagOption = baTagSelect.options[baTagSelect.selectedIndex];
+                                var tag = tagOption.value;
+                                var tagSlug = tagOption.dataset.slug || '';
+                                var excerpt = document.getElementById('baExcerpt').value.trim();
+                                var textColor = colorText.value.trim();
+                                var content = quillInstance ? quillInstance.root.innerHTML : '';
+                                var editId = document.getElementById('baEditId').value;
+
+                                /* Validation */
+                                if (!title) { showToast('Please enter a title'); return; }
+                                if (!author) { showToast('Please enter an author'); return; }
+                                if (!dateISO) { showToast('Please select a date'); return; }
+
+                                /* Format date for display */
+                                var d = new Date(dateISO + 'T00:00:00');
+                                var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                                var dateDisplay = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+
+                                /* Auto-calculate reading time if empty */
+                                if (!readingTime) {
+                                    var plainText = content.replace(/<[^>]*>/g, '').trim();
+                                    var words = plainText.split(/\s+/).filter(function (w) { return w; }).length;
+                                    var mins = Math.max(1, Math.ceil(words / 200));
+                                    readingTime = mins + ' min read';
+                                }
+
+                                var data = {
+                                    title: title,
+                                    author: author,
+                                    authorRole: authorRole,
+                                    date: dateDisplay,
+                                    dateISO: dateISO,
+                                    readingTime: readingTime,
+                                    tag: tag,
+                                    tagSlug: tagSlug,
+                                    excerpt: excerpt,
+                                    content: content,
+                                    theme: selectedTheme,
+                                    textColor: textColor || '',
+                                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                                };
+
+                                var saveBtn = document.getElementById('baSaveBtn');
+                                saveBtn.disabled = true;
+
+                                try {
+                                    if (editId) {
+                                        await db.collection('blogs').doc(editId).update(data);
+                                        var idx = adminBlogs.findIndex(function (b) { return b.id === editId; });
+                                        if (idx !== -1) { Object.assign(adminBlogs[idx], data); }
+                                        showToast('Blog updated');
+                                    } else {
+                                        data.position = adminBlogs.length;
+                                        data.featured = false;
+                                        data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                                        var ref = await db.collection('blogs').add(data);
+                                        adminBlogs.push({ id: ref.id, ...data });
+                                        showToast('Blog created');
+                                    }
+                                    closeEditor();
+                                    renderBlogList();
+                                } catch (e) {
+                                    console.error(e);
+                                    showToast('Failed to save. Please try again.');
+                                } finally {
+                                    saveBtn.disabled = false;
+                                }
+                            }
+
+                            /* ===== Tags modal ===== */
+                            function openTagsModal() {
+                                renderTagsList();
+                                baTagsModal.classList.add('open');
+                                document.body.style.overflow = 'hidden';
+                            }
+                            function closeTagsModal() {
+                                baTagsModal.classList.remove('open');
+                                document.body.style.overflow = '';
+                            }
+
+                            function renderTagsList() {
+                                var html = '';
+                                if (adminTags.length === 0) {
+                                    html = '<div style="text-align:center;padding:20px;color:var(--ink-soft);font-size:.88rem;">No tags yet. Add your first tag below.</div>';
+                                }
+                                adminTags.forEach(function (tag) {
+                                    html += '<div class="tag-row" data-id="' + tag.id + '">';
+                                    html += '<input type="text" value="' + esc(tag.name) + '" data-field="name">';
+                                    html += '<span class="tag-slug">' + esc(tag.slug) + '</span>';
+                                    html += '<button class="tag-save-btn" data-action="save-tag" data-id="' + tag.id + '" title="Save"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></button>';
+                                    html += '<button class="tag-del-btn" data-action="del-tag" data-id="' + tag.id + '" title="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>';
+                                    html += '</div>';
+                                });
+                                document.getElementById('baTagsList').innerHTML = html;
+                            }
+
+                            /* Tags list event delegation */
+                            document.getElementById('baTagsList').addEventListener('click', function (e) {
+                                var btn = e.target.closest('[data-action]');
+                                if (!btn) return;
+                                var action = btn.dataset.action;
+                                var id = btn.dataset.id;
+                                if (action === 'save-tag') saveTag(id);
+                                else if (action === 'del-tag') deleteTag(id);
+                            });
+
+                            async function saveTag(id) {
+                                var row = document.querySelector('.tag-row[data-id="' + id + '"]');
+                                var input = row.querySelector('input[data-field="name"]');
+                                var newName = input.value.trim();
+                                if (!newName) { showToast('Tag name cannot be empty'); return; }
+                                var newSlug = newName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                                if (!newSlug) { showToast('Invalid tag name'); return; }
+                                try {
+                                    await db.collection('tags').doc(id).update({ name: newName, slug: newSlug });
+                                    var tag = adminTags.find(function (t) { return t.id === id; });
+                                    if (tag) { tag.name = newName; tag.slug = newSlug; }
+                                    renderTagsList();
+                                    renderTagSelect();
+                                    showToast('Tag updated');
+                                } catch (e) { console.error(e); showToast('Failed to update tag'); }
+                            }
+
+                            function deleteTag(id) {
+                                showConfirm('Delete this tag?', 'Blogs using this tag will lose their category.', async function () {
+                                    try {
+                                        await db.collection('tags').doc(id).delete();
+                                        adminTags = adminTags.filter(function (t) { return t.id !== id; });
+                                        renderTagsList();
+                                        renderTagSelect();
+                                        showToast('Tag deleted');
+                                    } catch (e) { console.error(e); showToast('Failed to delete tag'); }
+                                });
+                            }
+
+                            /* Add new tag */
+                            async function addTag() {
+                                var input = document.getElementById('baNewTagName');
+                                var name = input.value.trim();
+                                if (!name) { showToast('Please enter a tag name'); return; }
+                                var slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                                if (!slug) { showToast('Invalid tag name'); return; }
+                                try {
+                                    var ref = await db.collection('tags').add({ name: name, slug: slug });
+                                    adminTags.push({ id: ref.id, name: name, slug: slug });
+                                    adminTags.sort(function (a, b) { return a.name.localeCompare(b.name); });
+                                    renderTagsList();
+                                    renderTagSelect();
+                                    input.value = '';
+                                    showToast('Tag added');
+                                } catch (e) { console.error(e); showToast('Failed to add tag'); }
+                            }
+
+                            // ===== MOBILE MENU TOGGLE =====
+                            (function () {
+                                const menuBtn = document.getElementById('baMobileMenuBtn');
+                                const sidebar = document.getElementById('sidebar');
+                                const overlay = document.getElementById('sidebarOverlay');
+
+                                if (!menuBtn || !sidebar || !overlay) return;
+
+                                let menuOpen = false;
+
+                                function toggleMenu() {
+                                    menuOpen = !menuOpen;
+                                    sidebar.classList.toggle('open', menuOpen);
+                                    overlay.classList.toggle('active', menuOpen);
+                                    menuBtn.classList.toggle('active', menuOpen);
+                                    menuBtn.setAttribute('aria-expanded', menuOpen);
+                                    document.body.style.overflow = menuOpen ? 'hidden' : '';
+                                }
+
+                                function closeMenu() {
+                                    if (!menuOpen) return;
+                                    menuOpen = false;
+                                    sidebar.classList.remove('open');
+                                    overlay.classList.remove('active');
+                                    menuBtn.classList.remove('active');
+                                    menuBtn.setAttribute('aria-expanded', 'false');
+                                    document.body.style.overflow = '';
+                                }
+
+                                menuBtn.addEventListener('click', toggleMenu);
+                                overlay.addEventListener('click', closeMenu);
+
+                                // Close menu when a nav item is clicked
+                                document.querySelectorAll('.nav-item').forEach(function (item) {
+                                    item.addEventListener('click', closeMenu);
+                                });
+
+                                // Close menu on escape key
+                                document.addEventListener('keydown', function (e) {
+                                    if (e.key === 'Escape' && menuOpen) {
+                                        closeMenu();
+                                    }
+                                });
+
+                                // Close menu on resize to desktop
+                                window.addEventListener('resize', function () {
+                                    if (window.innerWidth > 768 && menuOpen) {
+                                        closeMenu();
+                                    }
+                                });
+                            })();
+
+
+                            // ===== AUTHORS MANAGEMENT =====
+                            (function () {
+                                const authorsBtn = document.getElementById('baAuthorsBtn');
+                                const authorsModal = document.getElementById('authorsModal');
+                                const authorsModalClose = document.getElementById('authorsModalClose');
+                                const addAuthorBtn = document.getElementById('addAuthorBtn');
+                                const authorNameInput = document.getElementById('authorNameInput');
+                                const authorRoleInput = document.getElementById('authorRoleInput');
+                                const authorsList = document.getElementById('authorsList');
+                                const authorsEmpty = document.getElementById('authorsEmpty');
+
+                                if (!authorsBtn || !authorsModal) return;
+
+                                let authors = [];
+
+                                // Open modal
+                                authorsBtn.addEventListener('click', function () {
+                                    authorsModal.classList.add('open');
+                                    document.body.style.overflow = 'hidden';
+                                    loadAuthors();
+                                });
+
+                                // Close modal
+                                function closeAuthorsModal() {
+                                    authorsModal.classList.remove('open');
+                                    document.body.style.overflow = '';
+                                    authorNameInput.value = '';
+                                    authorRoleInput.value = '';
+                                }
+
+                                authorsModalClose.addEventListener('click', closeAuthorsModal);
+
+                                authorsModal.addEventListener('click', function (e) {
+                                    if (e.target === authorsModal) {
+                                        closeAuthorsModal();
+                                    }
+                                });
+
+                                // Close on escape
+                                document.addEventListener('keydown', function (e) {
+                                    if (e.key === 'Escape' && authorsModal.classList.contains('open')) {
+                                        closeAuthorsModal();
+                                    }
+                                });
+
+                                // Load authors from Firebase
+                                function loadAuthors() {
+                                    db.collection('authors').orderBy('name').get()
+                                        .then(function (snapshot) {
+                                            authors = [];
+                                            snapshot.forEach(function (doc) {
+                                                authors.push({
+                                                    id: doc.id,
+                                                    name: doc.data().name,
+                                                    role: doc.data().role || ''
+                                                });
+                                            });
+                                            renderAuthors();
+                                        })
+                                        .catch(function (err) {
+                                            console.error('Error loading authors:', err);
+                                        });
+                                }
+
+                                // Render authors list
+                                function renderAuthors() {
+                                    authorsList.innerHTML = '';
+
+                                    if (authors.length === 0) {
+                                        authorsEmpty.classList.add('show');
+                                        return;
+                                    }
+
+                                    authorsEmpty.classList.remove('show');
+
+                                    authors.forEach(function (author) {
+                                        var initials = author.name.split(' ').map(function (w) { return w[0]; }).join('').substring(0, 2).toUpperCase();
+
+                                        var item = document.createElement('div');
+                                        item.className = 'ba-author-item';
+                                        item.innerHTML =
+                                            '<div class="ba-author-info">' +
+                                            '<div class="ba-author-avatar">' + initials + '</div>' +
+                                            '<div class="ba-author-details">' +
+                                            '<div class="name">' + escapeHtml(author.name) + '</div>' +
+                                            '<div class="role">' + escapeHtml(author.role || 'No role specified') + '</div>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<button class="ba-author-delete" data-id="' + author.id + '" aria-label="Delete author">' +
+                                            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+                                            '<line x1="18" x2="6" y1="6" y2="18"/>' +
+                                            '<line x1="6" x2="18" y1="6" y2="18"/>' +
+                                            '</svg>' +
+                                            '</button>';
+
+                                        authorsList.appendChild(item);
+                                    });
+
+                                    // Attach delete events
+                                    authorsList.querySelectorAll('.ba-author-delete').forEach(function (btn) {
+                                        btn.addEventListener('click', function () {
+                                            var id = this.getAttribute('data-id');
+                                            deleteAuthor(id);
+                                        });
+                                    });
+                                }
+
+                                // Add author
+                                addAuthorBtn.addEventListener('click', function () {
+                                    var name = authorNameInput.value.trim();
+                                    var role = authorRoleInput.value.trim();
+
+                                    if (!name) {
+                                        authorNameInput.style.borderColor = '#b94a48';
+                                        authorNameInput.style.boxShadow = '0 0 0 3px rgba(185, 74, 72, .15)';
+                                        authorNameInput.focus();
+                                        setTimeout(function () {
+                                            authorNameInput.style.borderColor = '';
+                                            authorNameInput.style.boxShadow = '';
+                                        }, 1500);
+                                        return;
+                                    }
+
+                                    addAuthorBtn.disabled = true;
+                                    addAuthorBtn.innerHTML = '<span class="spinner" style="display:block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;"></span>';
+
+                                    db.collection('authors').add({
+                                        name: name,
+                                        role: role,
+                                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                                    })
+                                        .then(function (docRef) {
+                                            authors.push({
+                                                id: docRef.id,
+                                                name: name,
+                                                role: role
+                                            });
+                                            renderAuthors();
+                                            authorNameInput.value = '';
+                                            authorRoleInput.value = '';
+                                            authorNameInput.focus();
+                                        })
+                                        .catch(function (err) {
+                                            console.error('Error adding author:', err);
+                                            alert('Failed to add author. Please try again.');
+                                        })
+                                        .finally(function () {
+                                            addAuthorBtn.disabled = false;
+                                            addAuthorBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg> Add Author';
+                                        });
+                                });
+
+                                // Allow enter key to add author
+                                authorNameInput.addEventListener('keydown', function (e) {
+                                    if (e.key === 'Enter') {
+                                        if (authorRoleInput.value.trim() === '') {
+                                            authorRoleInput.focus();
+                                        } else {
+                                            addAuthorBtn.click();
+                                        }
+                                    }
+                                });
+
+                                authorRoleInput.addEventListener('keydown', function (e) {
+                                    if (e.key === 'Enter') {
+                                        addAuthorBtn.click();
+                                    }
+                                });
+
+                                // Delete author
+                                function deleteAuthor(id) {
+                                    if (!confirm('Delete this author?')) return;
+
+                                    db.collection('authors').doc(id).delete()
+                                        .then(function () {
+                                            authors = authors.filter(function (a) { return a.id !== id; });
+                                            renderAuthors();
+                                        })
+                                        .catch(function (err) {
+                                            console.error('Error deleting author:', err);
+                                            alert('Failed to delete author.');
+                                        });
+                                }
+
+                                // Helper: Escape HTML
+                                function escapeHtml(text) {
+                                    var div = document.createElement('div');
+                                    div.textContent = text;
+                                    return div.innerHTML;
+                                }
+
+                                // Expose loadAuthors globally for use in blog editor
+                                window.loadAuthorsForSelect = function () {
+                                    return db.collection('authors').orderBy('name').get()
+                                        .then(function (snapshot) {
+                                            var list = [];
+                                            snapshot.forEach(function (doc) {
+                                                list.push({
+                                                    id: doc.id,
+                                                    name: doc.data().name,
+                                                    role: doc.data().role || ''
+                                                });
+                                            });
+                                            return list;
+                                        });
+                                };
+                            })();
+
+                            /* ===== Event bindings ===== */
+                            document.getElementById('baNewBtn').addEventListener('click', function () { openEditor(null); });
+                            document.getElementById('baTagsBtn').addEventListener('click', openTagsModal);
+                            document.getElementById('baEditorClose').addEventListener('click', closeEditor);
+                            document.getElementById('baCancelBtn').addEventListener('click', closeEditor);
+                            document.getElementById('baSaveBtn').addEventListener('click', saveBlog);
+                            document.getElementById('baTagsClose').addEventListener('click', closeTagsModal);
+                            document.getElementById('baAddTagBtn').addEventListener('click', addTag);
+                            document.getElementById('baNewTagName').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); addTag(); } });
+
+                            /* Close modals on overlay click */
+                            baEditorModal.addEventListener('click', function (e) { if (e.target === baEditorModal) closeEditor(); });
+                            baTagsModal.addEventListener('click', function (e) { if (e.target === baTagsModal) closeTagsModal(); });
+
+                            /* Escape key */
+                            document.addEventListener('keydown', function (e) {
+                                if (e.key === 'Escape') {
+                                    if (baConfirm.classList.contains('open')) { baConfirm.classList.remove('open'); confirmCallback = null; }
+                                    else if (baEditorModal.classList.contains('open')) closeEditor();
+                                    else if (baTagsModal.classList.contains('open')) closeTagsModal();
+                                }
+                            });
+
+                            /* ===== Init Quill ===== */
+                            function initQuill() {
+                                if (!window.Quill) {
+                                    setTimeout(initQuill, 100);
+                                    return;
+                                }
+                                quillInstance = new Quill('#baQuillEditor', {
+                                    theme: 'snow',
+                                    placeholder: 'Write your blog content here...',
+                                    modules: {
+                                        toolbar: {
+                                            container: [
+                                                [{ 'header': [1, 2, 3, 4, false] }],
+                                                [{ 'font': [] }],
+                                                [{ 'size': ['small', false, 'large', 'huge'] }],
+                                                ['bold', 'italic', 'underline', 'strike'],
+                                                [{ 'color': [] }, { 'background': [] }],
+                                                [{ 'align': [] }],
+                                                [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
+                                                [{ 'indent': '-1' }, { 'indent': '+1' }],
+                                                ['blockquote', 'code-block'],
+                                                ['link', 'image'],
+                                                ['clean']
+                                            ],
+                                            handlers: {
+                                                image: function () {
+                                                    var url = prompt('Enter image URL:');
+                                                    if (url && url.trim()) {
+                                                        quillInstance.insertEmbed(quillInstance.getSelection(true).index, 'image', url.trim());
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+
+                            /* ===== Escape HTML helper ===== */
+                            function esc(str) {
+                                if (!str) return '';
+                                var div = document.createElement('div');
+                                div.textContent = str;
+                                return div.innerHTML;
+                            }
+
+                            /* ===== Boot ===== */
+                            async function boot() {
+                                initQuill();
+                                await Promise.all([loadBlogs(), loadTags()]);
+                            }
+
+                            boot();
+
+                        })();
+                    </script>
+                </div>
+                <div class="tab-panel" id="tab-subscribers">
+                    <!-- ===== SUBSCRIBERS SECTION ===== -->
+                    <style>
+                        .sub-section {
+                            padding: 24px;
+                            min-height: 100vh;
+                            display: flex;
+                            flex-direction: column;
+                        }
+
+                        .sub-header {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            flex-wrap: wrap;
+                            gap: 14px;
+                            margin-bottom: 20px;
+                        }
+
+                        .sub-header-left {
+                            display: flex;
+                            align-items: baseline;
+                            gap: 14px;
+                        }
+
+                        .sub-header-left h2 {
+                            font-size: 1.5rem;
+                            color: var(--evergreen);
+                        }
+
+                        .sub-count {
+                            font-size: .84rem;
+                            color: var(--ink-soft);
+                            font-weight: 500;
+                        }
+
+                        .sub-count b {
+                            color: var(--honey);
+                            font-weight: 700;
+                        }
+
+                        .sub-copy-all-btn {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 8px;
+                            font-family: "Mulish", sans-serif;
+                            font-weight: 600;
+                            font-size: .84rem;
+                            padding: .65em 1.3em;
+                            border-radius: 100px;
+                            cursor: pointer;
+                            border: 1px solid var(--honey);
+                            background: var(--honey);
+                            color: #fff;
+                            box-shadow: 0 10px 24px -10px rgba(188, 127, 55, .7);
+                            transition: transform .35s var(--ease), background .3s, box-shadow .35s;
+                        }
+
+                        .sub-copy-all-btn:hover {
+                            transform: translateY(-2px);
+                            background: #a96f2c;
+                            box-shadow: 0 16px 32px -12px rgba(188, 127, 55, .85);
+                        }
+
+                        .sub-copy-all-btn.copied {
+                            background: var(--sage);
+                            border-color: var(--sage);
+                            box-shadow: 0 10px 24px -10px rgba(126, 152, 133, .6);
+                        }
+
+                        .sub-copy-all-btn svg {
+                            flex: none;
+                        }
+
+                        /* Search bar */
+                        .sub-search-wrap {
+                            position: relative;
+                            margin-bottom: 16px;
+                            max-width: 360px;
+                            width: 100%;
+                        }
+
+                        .sub-search-wrap svg {
+                            position: absolute;
+                            left: 14px;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            color: var(--ink-soft);
+                            pointer-events: none;
+                        }
+
+                        .sub-search-input {
+                            width: 100%;
+                            padding: .7em 1em .7em 42px;
+                            border: 1px solid var(--line);
+                            border-radius: 14px;
+                            background: var(--bone);
+                            font-family: "Mulish", sans-serif;
+                            font-size: .88rem;
+                            color: var(--ink);
+                            transition: border-color .3s, box-shadow .3s;
+                        }
+
+                        .sub-search-input:focus {
+                            outline: none;
+                            border-color: var(--honey);
+                            box-shadow: 0 0 0 3px rgba(188, 127, 55, .12);
+                        }
+
+                        .sub-search-input::placeholder {
+                            color: var(--ink-soft);
+                            opacity: .7;
+                        }
+
+                        /* List */
+                        .sub-list {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 8px;
+                            flex: 1;
+                        }
+
+                        .sub-item {
+                            display: flex;
+                            align-items: center;
+                            gap: 14px;
+                            padding: 14px 18px;
+                            background: var(--surface);
+                            border: 1px solid var(--line);
+                            border-radius: 16px;
+                            transition: box-shadow .3s var(--ease), transform .3s var(--ease);
+                            animation: subIn .4s var(--ease) both;
+                        }
+
+                        .sub-item:hover {
+                            box-shadow: var(--shadow-soft);
+                            transform: translateY(-1px);
+                        }
+
+                        @keyframes subIn {
+                            from {
+                                opacity: 0;
+                                transform: translateY(10px);
+                            }
+
+                            to {
+                                opacity: 1;
+                                transform: none;
+                            }
+                        }
+
+                        .sub-item-index {
+                            width: 32px;
+                            height: 32px;
+                            border-radius: 10px;
+                            background: linear-gradient(135deg, var(--sage-soft), #e8ede5);
+                            display: grid;
+                            place-items: center;
+                            font-size: .76rem;
+                            font-weight: 700;
+                            color: var(--evergreen);
+                            flex: none;
+                        }
+
+                        .sub-item-info {
+                            flex: 1;
+                            min-width: 0;
+                        }
+
+                        .sub-item-email {
+                            font-weight: 600;
+                            font-size: .9rem;
+                            color: var(--evergreen);
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+
+                        .sub-item-date {
+                            font-size: .75rem;
+                            color: var(--ink-soft);
+                            margin-top: 2px;
+                        }
+
+                        .sub-copy-btn {
+                            width: 36px;
+                            height: 36px;
+                            border-radius: 10px;
+                            border: 1px solid var(--line);
+                            background: var(--bone);
+                            color: var(--ink-soft);
+                            display: grid;
+                            place-items: center;
+                            cursor: pointer;
+                            flex: none;
+                            transition: all .25s var(--ease);
+                        }
+
+                        .sub-copy-btn:hover {
+                            background: var(--sage-soft);
+                            color: var(--evergreen);
+                            border-color: var(--sage);
+                            transform: scale(1.08);
+                        }
+
+                        .sub-copy-btn.copied {
+                            background: var(--sage);
+                            border-color: var(--sage);
+                            color: #fff;
+                        }
+
+                        .sub-copy-btn svg {
+                            width: 16px;
+                            height: 16px;
+                        }
+
+                        /* Loading */
+                        .sub-loading {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 14px;
+                            padding: 80px 20px;
+                            color: var(--ink-soft);
+                        }
+
+                        .sub-spinner {
+                            width: 36px;
+                            height: 36px;
+                            border: 3px solid var(--line);
+                            border-top-color: var(--honey);
+                            border-radius: 50%;
+                            animation: spin .7s linear infinite;
+                        }
+
+                        @keyframes spin {
+                            to {
+                                transform: rotate(360deg);
+                            }
+                        }
+
+                        .sub-loading p {
+                            font-size: .88rem;
+                            font-weight: 500;
+                        }
+
+                        /* Empty */
+                        .sub-empty {
+                            display: none;
+                            flex-direction: column;
+                            align-items: center;
+                            gap: 12px;
+                            padding: 80px 20px;
+                            color: var(--ink-soft);
+                            text-align: center;
+                        }
+
+                        .sub-empty svg {
+                            opacity: .3;
+                        }
+
+                        .sub-empty h3 {
+                            font-size: 1.15rem;
+                            color: var(--evergreen);
+                        }
+
+                        .sub-empty p {
+                            font-size: .88rem;
+                        }
+
+                        .sub-empty.show {
+                            display: flex;
+                        }
+
+                        /* No results */
+                        .sub-no-results {
+                            display: none;
+                            flex-direction: column;
+                            align-items: center;
+                            gap: 8px;
+                            padding: 50px 20px;
+                            color: var(--ink-soft);
+                            text-align: center;
+                        }
+
+                        .sub-no-results.show {
+                            display: flex;
+                        }
+
+                        .sub-no-results p {
+                            font-size: .9rem;
+                        }
+
+                        @media (max-width: 768px) {
+                            .sub-section {
+                                padding: 16px;
+                            }
+
+                            .sub-header {
+                                flex-direction: column;
+                                align-items: flex-start;
+                            }
+
+                            .sub-copy-all-btn {
+                                width: 100%;
+                                justify-content: center;
+                            }
+
+                            .sub-search-wrap {
+                                max-width: 100%;
+                            }
+
+                            .sub-item {
+                                padding: 12px 14px;
+                                gap: 10px;
+                            }
+                        }
+                    </style>
+
+                    <div class="tab-panel" id="tab-subscribers">
+                        <div class="sub-section">
+
+                            <div class="sub-header">
+                                <div class="sub-header-left">
+                                    <h2>Subscribers</h2>
+                                    <span class="sub-count" id="subCount"><b>0</b> total</span>
+                                </div>
+                                <button class="sub-copy-all-btn" id="subCopyAll" title="Copy all emails">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                                    </svg>
+                                    <span>Copy All Emails</span>
+                                </button>
+                            </div>
+
+                            <div class="sub-search-wrap">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8" />
+                                    <path d="m21 21-4.3-4.3" />
+                                </svg>
+                                <input type="text" class="sub-search-input" id="subSearch"
+                                    placeholder="Search by email..." />
+                            </div>
+
+                            <div class="sub-list" id="subList">
+                                <div class="sub-loading" id="subLoading">
+                                    <div class="sub-spinner"></div>
+                                    <p>Loading subscribers...</p>
+                                </div>
+                            </div>
+
+                            <div class="sub-empty" id="subEmpty">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                </svg>
+                                <h3>No subscribers yet</h3>
+                                <p>New subscribers will appear here automatically.</p>
+                            </div>
+
+                            <div class="sub-no-results" id="subNoResults">
+                                <p>No subscribers match your search.</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <script>
+                        (function () {
+                            const subList = document.getElementById('subList');
+                            const subLoading = document.getElementById('subLoading');
+                            const subEmpty = document.getElementById('subEmpty');
+                            const subNoResults = document.getElementById('subNoResults');
+                            const subCount = document.getElementById('subCount');
+                            const subCopyAll = document.getElementById('subCopyAll');
+                            const subSearch = document.getElementById('subSearch');
+
+                            let allSubscribers = [];
+
+                            function formatDate(timestamp) {
+                                if (!timestamp) return 'Unknown';
+                                const d = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+                                return d.toLocaleDateString('en-IN', {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    year: 'numeric'
+                                }) + ' · ' + d.toLocaleTimeString('en-IN', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: true
+                                });
+                            }
+
+                            function renderList(subs) {
+                                subList.innerHTML = '';
+
+                                if (subs.length === 0) return;
+
+                                subs.forEach(function (sub, i) {
+                                    var item = document.createElement('div');
+                                    item.className = 'sub-item';
+                                    item.style.animationDelay = (i * 0.04) + 's';
+
+                                    item.innerHTML =
+                                        '<div class="sub-item-index">' + (i + 1) + '</div>' +
+                                        '<div class="sub-item-info">' +
+                                        '<div class="sub-item-email" title="' + sub.email + '">' + sub.email + '</div>' +
+                                        '<div class="sub-item-date">' + formatDate(sub.date) + '</div>' +
+                                        '</div>' +
+                                        '<button class="sub-copy-btn" data-email="' + sub.email + '" title="Copy email">' +
+                                        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                                        '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>' +
+                                        '<path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>' +
+                                        '</svg>' +
+                                        '</button>';
+
+                                    subList.appendChild(item);
+                                });
+
+                                attachCopyButtons();
+                            }
+
+                            function attachCopyButtons() {
+                                var btns = subList.querySelectorAll('.sub-copy-btn');
+                                btns.forEach(function (btn) {
+                                    btn.addEventListener('click', function () {
+                                        var email = this.getAttribute('data-email');
+                                        copyToClipboard(email);
+                                        this.classList.add('copied');
+                                        var self = this;
+                                        setTimeout(function () { self.classList.remove('copied'); }, 1500);
+                                    });
+                                });
+                            }
+
+                            function copyToClipboard(text) {
+                                if (navigator.clipboard && navigator.clipboard.writeText) {
+                                    navigator.clipboard.writeText(text);
+                                } else {
+                                    var ta = document.createElement('textarea');
+                                    ta.value = text;
+                                    ta.style.position = 'fixed';
+                                    ta.style.opacity = '0';
+                                    document.body.appendChild(ta);
+                                    ta.select();
+                                    document.execCommand('copy');
+                                    document.body.removeChild(ta);
+                                }
+                            }
+
+                            function showState(state) {
+                                subLoading.style.display = 'none';
+                                subEmpty.classList.remove('show');
+                                subNoResults.classList.remove('show');
+                                subList.innerHTML = '';
+
+                                if (state === 'loading') {
+                                    subLoading.style.display = 'flex';
+                                    subList.appendChild(subLoading);
+                                } else if (state === 'empty') {
+                                    subEmpty.classList.add('show');
+                                } else if (state === 'no-results') {
+                                    subNoResults.classList.add('show');
+                                }
+                            }
+
+                            function updateCount(count) {
+                                subCount.innerHTML = '<b>' + count + '</b> total';
+                            }
+
+                            function loadSubscribers() {
+                                showState('loading');
+
+                                db.collection('subscribers').orderBy('date', 'desc').get()
+                                    .then(function (snapshot) {
+                                        allSubscribers = [];
+                                        snapshot.forEach(function (doc) {
+                                            var data = doc.data();
+                                            allSubscribers.push({
+                                                email: data.email || '',
+                                                date: data.date || null
+                                            });
+                                        });
+
+                                        updateCount(allSubscribers.length);
+
+                                        if (allSubscribers.length === 0) {
+                                            showState('empty');
+                                        } else {
+                                            subLoading.style.display = 'none';
+                                            renderList(allSubscribers);
+                                        }
+                                    })
+                                    .catch(function (err) {
+                                        console.error('Error loading subscribers:', err);
+                                        showState('empty');
+                                    });
+                            }
+
+                            // Copy all emails
+                            subCopyAll.addEventListener('click', function () {
+                                if (allSubscribers.length === 0) return;
+                                var emails = allSubscribers.map(function (s) { return s.email; }).join(', ');
+                                copyToClipboard(emails);
+                                this.classList.add('copied');
+                                var btn = this;
+                                var originalText = btn.querySelector('span').textContent;
+                                btn.querySelector('span').textContent = 'Copied!';
+                                setTimeout(function () {
+                                    btn.classList.remove('copied');
+                                    btn.querySelector('span').textContent = originalText;
+                                }, 2000);
+                            });
+
+                            // Search
+                            subSearch.addEventListener('input', function () {
+                                var q = this.value.toLowerCase().trim();
+                                if (q === '') {
+                                    if (allSubscribers.length === 0) {
+                                        showState('empty');
+                                    } else {
+                                        subEmpty.classList.remove('show');
+                                        subNoResults.classList.remove('show');
+                                        renderList(allSubscribers);
+                                    }
+                                    return;
+                                }
+
+                                var filtered = allSubscribers.filter(function (s) {
+                                    return s.email.toLowerCase().indexOf(q) !== -1;
+                                });
+
+                                if (filtered.length === 0) {
+                                    showState('no-results');
+                                } else {
+                                    subEmpty.classList.remove('show');
+                                    subNoResults.classList.remove('show');
+                                    renderList(filtered);
+                                }
+                            });
+
+                            // Load on tab switch
+                            document.querySelectorAll('.nav-item[data-tab="subscribers"]').forEach(function (btn) {
+                                btn.addEventListener('click', function () {
+                                    if (allSubscribers.length === 0 && subList.querySelector('.sub-loading')) {
+                                        loadSubscribers();
+                                    }
+                                });
+                            });
+
+                            // Initial load (in case subscribers tab is somehow active)
+                            loadSubscribers();
+                        })();
+                    </script>
+                </div>
+                <div class="tab-panel" id="tab-inquiry"></div>
+                <div class="tab-panel" id="tab-bookings"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ===== DOM References ===== */
+        var loginScreen = document.getElementById('loginScreen');
+        var loginCard = document.getElementById('loginCard');
+        var loginPassword = document.getElementById('loginPassword');
+        var loginBtn = document.getElementById('loginBtn');
+        var loginError = document.getElementById('loginError');
+        var togglePw = document.getElementById('togglePw');
+        var eyeOpen = document.getElementById('eyeOpen');
+        var eyeClosed = document.getElementById('eyeClosed');
+
+        var adminDashboard = document.getElementById('adminDashboard');
+        var sidebar = document.getElementById('sidebar');
+        var sidebarOverlay = document.getElementById('sidebarOverlay');
+        var menuToggle = document.getElementById('menuToggle');
+        var logoutBtn = document.getElementById('logoutBtn');
+        var pageTitle = document.getElementById('pageTitle');
+        var navItems = document.querySelectorAll('.nav-item');
+        var tabPanels = document.querySelectorAll('.tab-panel');
+
+        /* ===== Password visibility toggle ===== */
+        togglePw.addEventListener('click', function () {
+            var isPassword = loginPassword.type === 'password';
+            loginPassword.type = isPassword ? 'text' : 'password';
+            eyeOpen.style.display = isPassword ? 'none' : 'block';
+            eyeClosed.style.display = isPassword ? 'block' : 'none';
+        });
+
+        /* ===== Login — reads password from Firestore credential/admin and compares ===== */
+        function handleLogin() {
+            var password = loginPassword.value;
+
+            /* Empty check */
+            if (!password || password.trim() === '') {
+                showError('Please enter the password.');
+                shakeCard();
+                return;
+            }
+
+            /* Firebase SDK availability check */
+            if (typeof firebase === 'undefined' || typeof firebase.firestore === 'undefined') {
+                showError('Firebase SDK failed to load. Refresh the page.');
+                return;
+            }
+
+            /* db availability check */
+            if (typeof db === 'undefined') {
+                showError('Database not initialized. Refresh the page.');
+                return;
+            }
+
+            /* Show loading */
+            loginBtn.classList.add('loading');
+            loginBtn.disabled = true;
+            loginError.textContent = '';
+
+            /* Call Firestore — read credential/admin document */
+            db.collection('credential').doc('admin').get()
+                .then(function (docSnap) {
+                    if (docSnap.exists) {
+                        var storedPassword = docSnap.data().password;
+
+                        if (password === storedPassword) {
+                            /* Success */
+                            showDashboard();
+                        } else {
+                            showError('Incorrect password. Please try again.');
+                            shakeCard();
+                        }
+                    } else {
+                        showError('Admin credentials not found in database.');
+                        shakeCard();
+                    }
+                })
+                .catch(function (err) {
+                    console.error('Firestore read error:', err.code, err.message);
+                    showError('Connection error. Please check your network and try again.');
+                    shakeCard();
+                })
+                .finally(function () {
+                    loginBtn.classList.remove('loading');
+                    loginBtn.disabled = false;
+                });
+        }
+
+        function showError(msg) {
+            loginError.textContent = msg;
+        }
+
+        function shakeCard() {
+            loginCard.classList.remove('shake');
+            void loginCard.offsetWidth;
+            loginCard.classList.add('shake');
+        }
+
+        function showDashboard() {
+            loginScreen.classList.add('hide');
+            setTimeout(function () {
+                loginScreen.style.display = 'none';
+                adminDashboard.style.display = 'flex';
+                void adminDashboard.offsetWidth;
+                adminDashboard.classList.add('show');
+            }, 550);
+        }
+
+        /* Login triggers */
+        loginBtn.addEventListener('click', handleLogin);
+        loginPassword.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') handleLogin();
+        });
+
+        /* ===== Tab switching ===== */
+        var titleMap = {
+            blogs: 'Blogs',
+            subscribers: 'Subscribers',
+            inquiry: 'Inquiry',
+            bookings: 'Bookings'
+        };
+
+        navItems.forEach(function (item) {
+            item.addEventListener('click', function () {
+                var tabName = this.getAttribute('data-tab');
+
+                /* Active nav item */
+                navItems.forEach(function (n) { n.classList.remove('active'); });
+                this.classList.add('active');
+
+                /* Active tab panel */
+                tabPanels.forEach(function (p) { p.classList.remove('active'); });
+                var target = document.getElementById('tab-' + tabName);
+                if (target) target.classList.add('active');
+
+                /* Page title */
+                pageTitle.textContent = titleMap[tabName] || tabName;
+
+                /* Close mobile sidebar */
+                closeSidebar();
+            });
+        });
+
+        /* ===== Mobile sidebar ===== */
+        function openSidebar() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('active');
+            menuToggle.setAttribute('aria-expanded', 'true');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('active');
+            menuToggle.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        }
+
+        menuToggle.addEventListener('click', function () {
+            sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+        });
+
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
+        });
+
+        /* ===== Logout ===== */
+        logoutBtn.addEventListener('click', function () {
+            adminDashboard.classList.remove('show');
+            setTimeout(function () {
+                adminDashboard.style.display = 'none';
+                loginScreen.style.display = 'flex';
+                loginPassword.value = '';
+                loginError.textContent = '';
+                loginCard.classList.remove('shake');
+                void loginScreen.offsetWidth;
+                loginScreen.classList.remove('hide');
+                loginPassword.focus();
+            }, 500);
+        });
+    </script>
+
+</body>
+
+</html>
