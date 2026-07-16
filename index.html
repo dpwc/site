@@ -5,8 +5,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>De Paul Wellness Centre · Aluva</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="shortcut icon" href="/favicon.ico">
   <meta name="description"
-    content="A Vincentian sanctuary of healing and growth in Aluva, Ernakulam, Kerala — compassionate counselling, mental health care, mindfulness and positive psychology training." />
+    content="A Vincentian sanctuary of healing and growth in Aluva, Ernakulam, Kerala; compassionate counselling, mental health care, mindfulness and positive psychology training." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -1287,6 +1292,103 @@
       margin: 0;
     }
 
+    .cta-band {
+      background: var(--evergreen);
+      color: var(--bone);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-band::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(80% 120% at 50% -20%, rgba(217, 166, 85, .14), transparent 60%);
+    }
+
+    .cta-band .wrap {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 650px;
+    }
+
+    .cta-band h2 {
+      color: #fff;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      margin-bottom: .6rem;
+    }
+
+    .cta-band p {
+      color: rgba(248, 244, 236, .75);
+      font-size: .95rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .cta-band .cta-btns {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Footer action buttons */
+    .foot-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .foot-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .45em;
+      padding: .55em 1.1em;
+      border-radius: 100px;
+      font-size: .82rem;
+      font-weight: 600;
+      transition: transform .3s var(--ease), box-shadow .3s, background .3s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .foot-btn--call {
+      background: var(--honey-soft);
+      color: #241a0a;
+    }
+
+    .foot-btn--call:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px -6px rgba(188, 127, 55, .6);
+      background: #e6b669;
+    }
+
+    .foot-btn--wa {
+      background: #25D366;
+      color: #fff;
+    }
+
+    .foot-btn--wa:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px -6px rgba(37, 211, 102, .5);
+      background: #20bd5a;
+    }
+
+    .foot-bottom {
+      border-top: 1px solid rgba(248, 244, 236, .12);
+      margin-top: 48px;
+      padding-top: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: .8rem;
+      color: rgba(248, 244, 236, .5);
+    }
+
+
     /* ---------- footer ---------- */
     footer {
       background: var(--evergreen);
@@ -1533,15 +1635,18 @@
           <span class="name">DPWC</span>
         </a>
         <div class="nav-links" id="navLinks">
-          <a href="/">Home</a>
-          <a href="/#about">About</a>
-          <a href="/#blog">Blog</a>
-          <a href="/#contact">Contact</a>
-          <a href="/#book-session" class="btn btn--primary mobile-cta" style="display: none;">Book a session <span
-              class="arrow">→</span></a>
+          <a href="/" class="active" style="color: #fff;
+      background: var(--honey);
+      box-shadow: 0 4px 15px -5px rgba(188, 127, 55, .6);">Home</a>
+          <a href="/services/">Services</a>
+          <a href="/training/">Training</a>
+          <a href="/blog/">Blog</a>
+          <a href="/contact/">Contact</a>
+          <a href="/contact/#book-session" class="btn btn--primary mobile-cta" style="display: none;">Schedule
+            <span class="arrow">→</span></a>
         </div>
         <div class="nav-cta">
-          <a href="/#book-session" class="btn btn--primary">Book a session <span class="arrow">→</span></a>
+          <a href="/contact/#book-session" class="btn btn--primary">Schedule <span class="arrow">→</span></a>
           <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round">
@@ -1560,12 +1665,11 @@
       <div class="hero-copy reveal"><br><br><br>
         <span class="eyebrow">A Vincentian Sanctuary of Healing</span>
         <h1>A safe place to <em>heal,</em> grow, and find your way home to yourself.</h1>
-        <p class="lede">In a world touched by stress, isolation, and uncertainty, De Paul Wellness Centre offers
-          a warm, nurturing space for whole-person healing for students, families, professionals, and
-          religious alike.</p>
+        <br><br>
+
         <div class="hero-cta">
-          <a href="/#contact" class="btn btn--primary">Begin your journey <span class="arrow">→</span></a>
-          <a href="/#services" class="btn btn--ghost">Explore our services</a>
+          <a href="/contact/" class="btn btn--primary">Begin your journey <span class="arrow">→</span></a>
+          <a href="/services/" class="btn btn--ghost">Explore our services</a>
         </div>
 
       </div>
@@ -1613,12 +1717,11 @@
       <div class="about-copy reveal">
         <span class="eyebrow">About the Centre</span>
         <h2>Healing is not just a service; it is a mission of the heart.</h2>
-        <p class="lede">De Paul Wellness Centre is a compassionate Vincentian initiative, rooted in the timeless
-          values of Saint Vincent de Paul: charity, humility, and service to the most vulnerable.</p>
+
         <p>We believe true health is not merely the absence of illness, but the flourishing of the whole person
           in body, mind, and soul. Inspired by the Vincentian spirit of practical love and human dignity, we
           offer a welcoming space where every person regardless of background or circumstance is seen,
-          heard, and cared for with warmth and respect.</p>
+          heard, and cared for with respect.</p>
       </div>
       <div class="vm-stack reveal">
         <div class="vm-card">
@@ -1630,8 +1733,7 @@
             Our Vision
           </div>
           <p>To create a sanctuary of healing and growth where individuals, families, and youth discover inner
-            peace, resilience, and holistic well-being through professional psychological support rooted in
-            Vincentian compassion.</p>
+            peace, resilience, and holistic wellness</p>
         </div>
         <div class="vm-card">
           <div class="tag">
@@ -1642,8 +1744,7 @@
             Our Mission
           </div>
           <p>To provide accessible, professional psychotherapy and counselling that addresses the emotional,
-            psychological, and spiritual needs of people in their daily struggles — fostering mental health
-            awareness and resilience within the Aluva community.</p>
+            needs of people. </p>
         </div>
       </div>
     </div>
@@ -1652,7 +1753,7 @@
   <!-- ===== VALUES BAND ===== -->
   <section class="band section--tight">
     <div class="wrap reveal">
-      <p class="quote">"True health is the flourishing of the whole person in body, mind, and soul."</p>
+      <p class="quote">"True health is the flourishing of the whole person in body and mind"</p>
       <div style="display:flex;justify-content:center;">
         <span class="sig-line center">— The Vincentian spirit at the heart of De Paul Wellness Centre</span>
       </div>
@@ -1694,140 +1795,65 @@
           pace, in a space where you are truly heard and deeply valued.</p>
       </div>
       <div class="svc-grid">
-        <article class="svc reveal">
-          <div class="icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="8" r="4" />
-              <path d="M5 21c0-4 3-7 7-7s7 3 7 7" />
-            </svg></div>
-          <h3>Individual Counselling</h3>
-          <p>Personalised one-on-one support to explore your innermost thoughts and emotions through
-            anxiety, depression, stress, or life's transitions.</p>
-          <span class="who">Youth · Adults · Religious</span>
+        <article class="svc reveal"
+          style="background:linear-gradient(160deg,var(--evergreen),var(--evergreen-2));border:none;">
+          <a href="/services/">
+            <div class="icon" style="background:rgba(217,166,85,.18);color:var(--honey-soft);box-shadow:none;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="8" cy="9" r="3" />
+                <circle cx="17" cy="9" r="2.5" />
+                <path d="M2 20c0-3 2.7-5 6-5s6 2 6 5M14.5 15c2.8.2 5 2.2 5 5" />
+              </svg>
+            </div>
+            <h3 style="color:#fff;">Individual Counselling</h3>
+            <p style="color:rgba(248,244,236,.8);">Personalised one-on-one support to explore your innermost
+              thoughts and emotions through
+              anxiety, depression, stress.</p>
+          </a>
+          <a href="/services/" class="who" style="color:var(--honey-soft);">Youth · Adults →</a>
         </article>
-        <article class="svc reveal">
-          <div class="icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="8" cy="9" r="3" />
-              <circle cx="17" cy="9" r="2.5" />
-              <path d="M2 20c0-3 2.7-5 6-5s6 2 6 5M14.5 15c2.8.2 5 2.2 5 5" />
-            </svg></div>
-          <h3>Family Therapy</h3>
-          <p>Gently rebuilding the bridges of understanding, trust, and love. A safe, neutral space where
-            every voice is heard.</p><br>
-          <span class="who">Couples · Parents · Families</span>
-        </article>
-        <article class="svc reveal">
-          <div class="icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="7" r="3.2" />
-              <path d="M6 21c0-4 2.7-7 6-7s6 3 6 7" />
-              <path d="m9 4 1.5-1.5L12 4l1.5-1.5L15 4" />
-            </svg></div>
-          <h3>Child &amp; Adolescent</h3>
-          <p>Warm, age-appropriate counselling for behavioural challenges, academic stress, and emotional
-            regulation.</p><br>
-          <span class="who">Children · Teenagers</span>
-        </article>
-        <article class="svc reveal">
-          <div class="icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="7" cy="8" r="2.4" />
-              <circle cx="17" cy="8" r="2.4" />
-              <circle cx="12" cy="15" r="2.4" />
-              <path d="M5 20c0-2 1.3-3.4 3-3.6M19 20c0-2-1.3-3.4-3-3.6" />
-            </svg></div>
-          <h3>Group Therapy</h3>
-          <p>A community of mutual understanding and hope. Carefully facilitated support for grief, addiction
-            recovery, and stress.</p><br>
-          <span class="who">Shared Healing</span>
-        </article>
-        <article class="svc reveal">
-          <div class="icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 3H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z" />
-              <path d="M22 7l-4 3v4l4 3V7Z" />
-            </svg></div>
-          <h3>Online Availability</h3>
-          <p>Finding your inner peace now accessible online, offering flexible online schedules especially for
-            international
-            clients.</p><br>
-          <span class="who">Virtual &amp; Sessions</span>
+
+        <article class="svc reveal"
+          style="background:linear-gradient(160deg,var(--evergreen),var(--evergreen-2));border:none;">
+          <a href="/services/">
+            <div class="icon" style="background:rgba(217,166,85,.18);color:var(--honey-soft);box-shadow:none;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="8" cy="9" r="3" />
+                <circle cx="17" cy="9" r="2.5" />
+                <path d="M2 20c0-3 2.7-5 6-5s6 2 6 5M14.5 15c2.8.2 5 2.2 5 5" />
+              </svg>
+            </div>
+            <h3 style="color:#fff;">Family Therapy</h3>
+            <p style="color:rgba(248,244,236,.8);">Gently rebuilding the bridges of understanding, trust,
+              and love. A safe, neutral space where
+              every voice is heard.</p>
+          </a>
+          <a href="/services/" class="who" style="color:var(--honey-soft);">Couples · Families →</a>
         </article>
 
         <article class="svc reveal"
           style="background:linear-gradient(160deg,var(--evergreen),var(--evergreen-2));border:none;"><a
-            href="/#contact">
+            href="/services/">
             <div class="icon" style="background:rgba(217,166,85,.18);color:var(--honey-soft);box-shadow:none;">
               <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                 stroke-linecap="round" stroke-linejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </div>
-            <h3 style="color:#fff;">Not sure where to start?</h3>
-            <p style="color:rgba(248,244,236,.8);">Reach out and we'll gently help you find the right kind
-              of
-              support at the pace that feels safe for you.</p>
-          </a><br><br>
-          <a href="/#contact" class="who" style="color:var(--honey-soft);">Talk to us →</a>
+            <h3 style="color:#fff;">And There's More</h3>
+            <p style="color:rgba(248,244,236,.8);">Explore our complete range of professional mental health
+              and wellness services crafted to your unique needs.</p>
+          </a>
+          <a href="/services/" class="who" style="color:var(--honey-soft);">View All →</a>
         </article>
 
       </div>
     </div>
   </section>
 
-  <!-- ===== TEAM / EXPECTATIONS ===== -->
-  <section class="section team" id="team">
-    <div class="wrap team-grid">
-      <div class="team-copy reveal">
-        <span class="eyebrow">Our Team</span>
-        <h2>Reaching out takes courage. You don't have to walk alone.</h2>
-        <p>Our team of experienced, certified therapists brings not just professional expertise, but genuine
-          human understanding to every session. Every person is unique so we take the time to truly know
-          you.</p>
-        <p>Here, you are never just a patient. You are a person, and your wellbeing is our deepest commitment.
-        </p>
-        <a href="/#contact" class="btn btn--ghost" style="margin-top:.6rem;">Meet us when you're ready <span
-            class="arrow">→</span></a>
-      </div>
-      <div class="reveal">
-        <ul class="expect">
-          <li><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m5 12 5 5 9-11" />
-              </svg></span><span><b>A safe, confidential space</b><span>Speak freely, without fear of
-                judgment.</span></span></li>
-          <li><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m5 12 5 5 9-11" />
-              </svg></span><span><b>Personalised therapy plans</b><span>Thoughtfully designed around your
-                unique needs.</span></span></li>
-          <li><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m5 12 5 5 9-11" />
-              </svg></span><span><b>Heal at your own pace</b><span>A nurturing environment for full
-                expression.</span></span></li>
-          <li><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m5 12 5 5 9-11" />
-              </svg></span><span><b>Ongoing support &amp; follow-up</b><span>Regular sessions to track
-                your progress.</span></span></li>
-          <li><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m5 12 5 5 9-11" />
-              </svg></span><span><b>In-person or online</b><span>Visit us in Aluva, or connect
-                online.</span></span>
-          </li>
-          <li><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m5 12 5 5 9-11" />
-              </svg></span><span><b>Virtual Sessions</b><span>Flexible online schedule especially for
-                international
-                clients.</span></span></li>
-        </ul>
-      </div>
-    </div>
-  </section>
+
 
   <!-- ===== TRAINING ===== -->
   <section class="section" id="training">
@@ -1839,7 +1865,7 @@
           <p>Burnout is not inevitable, and thriving is not a privilege reserved for the few. Grounded in the
             latest positive psychology research and enriched by mindfulness, our programmes give educators
             and professionals the inner tools to truly flourish.</p>
-          <a href="/#contact" class="btn btn--light" style="margin-top:.6rem;">Bring a programme to your team
+          <a href="/training/" class="btn btn--light" style="margin-top:.6rem;">Learn More
             <span class="arrow">→</span></a>
         </div>
       </div>
@@ -1897,15 +1923,15 @@
           Doctorate
           in Canon Law from Spain and a Doctorate in Positive Psychology from the USA, and is a Diplomate of
           Positive Psychology from the American Board of Positive Psychology.</p>
-        <p>His ministry has taken him across more than 40 countries and diverse cultures, enriching his
-          understanding of the human experience. A mindfulness practitioner, motivational speaker, therapist,
-          and author, he trains educators, youth, and professionals to live meaningful, fulfilled lives.</p>
+
         <div class="creds">
+
           <span class="cred">Doctorate, Canon Law (Spain)</span>
           <span class="cred">Doctorate, Positive Psychology (USA)</span>
           <span class="cred">Diplomate, Positive Psychology</span>
           <span class="cred">Author &amp; Speaker</span>
         </div>
+
       </div>
     </div>
   </section>
@@ -1922,7 +1948,7 @@
         <a href="/blog/" class="btn btn--light">View all articles <span class="arrow">→</span></a>
       </div>
       <div class="blog-grid">
-        <a href="https://depaulwellness.com/blog/?blog=9rrFo7SdrJKNiA0HBjBq">
+        <a href="/blog/">
           <article class="post reveal">
             <div class="thumb">
               <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice">
@@ -1940,13 +1966,14 @@
             <div class="body">
               <span class="cat">Mindfulness</span>
               <h3>Growing Up Is Harder Now</h3>
-              <p>Today’s youth face pressures earlier generations never experienced. Their social lives never pause;
+              <p>Today’s youth face pressures earlier generations never experienced. Their social lives
+                never pause;
                 follows them home through their phones.</p>
 
             </div>
           </article>
         </a>
-        <a href="https://depaulwellness.com/blog/?blog=DShmmgEswvPEK3G4Wmqf">
+        <a href="/blog/">
           <article class="post reveal">
             <div class="thumb">
               <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice">
@@ -1964,13 +1991,14 @@
             <div class="body">
               <span class="cat">Family</span>
               <h3>When Love Feels Like Hard Work</h3>
-              <p>Most couples don’t fall apart because of one big betrayal. Instead, they drift apart through many small
+              <p>Most couples don’t fall apart because of one big betrayal. Instead, they drift apart
+                through many small
                 disconnections, and feels like a distance.</p>
 
             </div>
           </article>
         </a>
-        <a href="https://depaulwellness.com/blog/?blog=jYUQRh4tykU0FS8ccgs0">
+        <a href="/blog/">
           <article class="post reveal">
             <div class="thumb">
               <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice">
@@ -1987,8 +2015,9 @@
             </div>
             <div class="body">
               <span class="cat">Mental Wellness</span>
-              <h3>The Importance of Mental Health</h3>
-              <p>Mental health challenges are common and not a sign of weakness. When you improve one area, the others
+              <h3>The Importance of Mental Health Today</h3>
+              <p>Mental health challenges are common and not a sign of weakness. When you improve one
+                area, the others
                 benefit too, will able to cope with life’s challenges.</p>
 
             </div>
@@ -2052,223 +2081,27 @@
     </div>
   </section>
 
-  <!-- ===== CONTACT ===== -->
-  <section class="section" id="contact" style="margin-bottom: -150px;">
-    <style>
-      .cg-fixed {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 40px;
-        align-items: start;
-      }
-
-      @media (max-width: 768px) {
-        .cg-fixed {
-          grid-template-columns: 1fr;
-          gap: 0;
-        }
-
-        .cg-right {
-          padding-top: 10px !important;
-        }
-      }
-
-      .ci-link {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        text-decoration: none;
-        color: inherit;
-        padding: 10px 0;
-        cursor: pointer;
-      }
-
-      .ci-link span b {
-        display: block;
-        margin-bottom: 2px;
-      }
-    </style>
-
-    <div class="wrap cg-fixed">
-      <div class="contact-copy reveal">
-        <span class="eyebrow">Contact Us</span>
-        <h2>Keep in touch</h2>
-        <p>Have a question or need assistance? We'd love to hear from you. Send us a message, and our team will
-          get back to you as soon as possible.
-        </p>
-
-        <a href="https://www.google.com/maps/search/St.+Vincent's+Mission+House,+UC+College+Aluva,+Ernakulam,+Kerala+670633"
-          target="_blank" rel="noopener noreferrer" class="ci-link"
-          onmouseover="this.querySelector('.ic').style.background='#f4efe5';this.querySelector('.ic svg').style.stroke='#16302a'"
-          onmouseout="this.querySelector('.ic').style.background='#16302a';this.querySelector('.ic svg').style.stroke='#f4efe5'">
-          <span class="ic"
-            style="width:42px;height:42px;border-radius:14px;background:#16302a;display:grid;place-items:center;transition:all .3s;flex-shrink:0;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4efe5" stroke-width="1.8"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0Z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-          </span>
-          <span>
-            <b>Visit the Centre</b>
-            <span style="display:block;line-height:1.6;">St. Vincent's Mission House,<br>UC College (PO),
-              Aluva,<br>Ernakulam(Dist),<br>Kerala, 670 633</span>
-          </span>
+  <!-- ===== CTA BAND ===== -->
+  <section class="cta-band section--tight">
+    <div class="wrap reveal">
+      <h2>Ready to take the first step?</h2>
+      <p>You don't have to have it all figured out. Just reach out — we'll walk the rest together.</p>
+      <div class="cta-btns">
+        <a href="tel:+919633691339" class="foot-btn foot-btn--call">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z" />
+          </svg>
+          Call Now
         </a>
-      </div>
-
-      <div class="contact-copy reveal cg-right" style="padding-top: 110px;">
-
-        <a href="https://wa.me/919526821793" target="_blank" rel="noopener noreferrer" class="ci-link"
-          onmouseover="this.querySelector('.ic').style.background='#f4efe5';this.querySelector('.ic svg').style.fill='#16302a'"
-          onmouseout="this.querySelector('.ic').style.background='#16302a';this.querySelector('.ic svg').style.fill='#f4efe5'">
-          <span class="ic"
-            style="width:42px;height:42px;border-radius:14px;background:#16302a;display:grid;place-items:center;transition:all .3s;flex-shrink:0;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#f4efe5" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-            </svg>
-          </span>
-          <span>
-            <b>WhatsApp</b>
-            <span style="display:block;">+91 95268 21793</span>
-          </span>
+        <a href="https://wa.me/919526821793" target="_blank" rel="noopener noreferrer" class="foot-btn foot-btn--wa">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+          </svg>
+          WhatsApp
         </a>
-
-        <a href="tel:+919633691339" class="ci-link"
-          onmouseover="this.querySelector('.ic').style.background='#f4efe5';this.querySelector('.ic svg').style.stroke='#16302a'"
-          onmouseout="this.querySelector('.ic').style.background='#16302a';this.querySelector('.ic svg').style.stroke='#f4efe5'">
-          <span class="ic"
-            style="width:42px;height:42px;border-radius:14px;background:#16302a;display:grid;place-items:center;transition:all .3s;flex-shrink:0;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4efe5" stroke-width="1.8"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path
-                d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.7 2Z" />
-            </svg>
-          </span>
-          <span>
-            <b>Call</b>
-            <span style="display:block;">+91 96336 91339</span>
-          </span>
-        </a>
-
-        <a href="mailto:depaulwellness1625@gmail.com" class="ci-link"
-          onmouseover="this.querySelector('.ic').style.background='#f4efe5';this.querySelector('.ic svg').style.stroke='#16302a'"
-          onmouseout="this.querySelector('.ic').style.background='#16302a';this.querySelector('.ic svg').style.stroke='#f4efe5'">
-          <span class="ic"
-            style="width:42px;height:42px;border-radius:14px;background:#16302a;display:grid;place-items:center;transition:all .3s;flex-shrink:0;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4efe5" stroke-width="1.8"
-              stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="5" width="18" height="14" rx="2" />
-              <path d="m3 7 9 6 9-6" />
-            </svg>
-          </span>
-          <span>
-            <b>Email</b>
-            <span style="display:block;">depaulwellness1625@gmail.com</span>
-          </span>
-        </a>
-
-        <div style="display:flex;gap:10px;margin-top:20px;">
-          <a href="#"
-            style="width:42px;height:42px;border-radius:14px;background:#16302a;display:grid;place-items:center;transition:all .3s;"
-            onmouseover="this.style.background='#f4efe5';this.querySelector('svg').style.stroke='#16302a'"
-            onmouseout="this.style.background='#16302a';this.querySelector('svg').style.stroke='#f4efe5'"><svg
-              width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4efe5" stroke-width="1.8"
-              stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="2" width="20" height="20" rx="5" />
-              <circle cx="12" cy="12" r="5" />
-              <circle cx="17.5" cy="6.5" r="1.5" fill="#f4efe5" stroke="none" />
-            </svg></a>
-          <a href="#"
-            style="width:42px;height:42px;border-radius:14px;background:#16302a;display:grid;place-items:center;transition:all .3s;"
-            onmouseover="this.style.background='#f4efe5';this.querySelector('svg').style.stroke='#16302a'"
-            onmouseout="this.style.background='#16302a';this.querySelector('svg').style.stroke='#f4efe5'"><svg
-              width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4efe5" stroke-width="1.8"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
-              <rect x="2" y="9" width="4" height="12" />
-              <circle cx="4" cy="4" r="2" />
-            </svg></a>
-          <a href="#"
-            style="width:42px;height:42px;border-radius:14px;background:#16302a;display:grid;place-items:center;transition:all .3s;"
-            onmouseover="this.style.background='#f4efe5';this.querySelector('svg').style.stroke='#16302a'"
-            onmouseout="this.style.background='#16302a';this.querySelector('svg').style.stroke='#f4efe5'"><svg
-              width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4efe5" stroke-width="1.8"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path
-                d="M2.5 17a24.1 24.1 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.6 49.6 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.1 24.1 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.6 49.6 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
-              <path d="m10 15 5-3-5-3z" />
-            </svg></a>
-          <a href="#"
-            style="width:42px;height:42px;border-radius:14px;background:#16302a;display:grid;place-items:center;transition:all .3s;"
-            onmouseover="this.style.background='#f4efe5';this.querySelector('svg').style.stroke='#16302a'"
-            onmouseout="this.style.background='#16302a';this.querySelector('svg').style.stroke='#f4efe5'"><svg
-              width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4efe5" stroke-width="1.8"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-            </svg></a>
-          <a href="https://www.google.com/maps/search/St.+Vincent's+Mission+House,+UC+College+Aluva,+Ernakulam,+Kerala+670633"
-            target="_blank" rel="noopener noreferrer"
-            style="width:42px;height:42px;border-radius:14px;background:#16302a;display:grid;place-items:center;transition:all .3s;"
-            onmouseover="this.style.background='#f4efe5';this.querySelector('svg').style.stroke='#16302a'"
-            onmouseout="this.style.background='#16302a';this.querySelector('svg').style.stroke='#f4efe5'"><svg
-              width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4efe5" stroke-width="1.8"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0Z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg></a>
-        </div>
-
-      </div>
-    </div>
-  </section><br><br>
-
-  <!-- ===== Book Session ===== -->
-  <section class="section" id="book-session">
-    <div class="wrap contact-grid">
-      <div class="contact-copy reveal">
-        <span class="eyebrow">Book a Session</span>
-        <h2>Take the first gentle step.</h2>
-        <p>Whenever you're ready, we're here. Send us a message and our team will reach out with warmth and care
-          in complete confidence.</p>
-
-      </div>
-
-      <div class="form reveal">
-        <form id="contactForm" novalidate>
-          <div class="field">
-            <label for="name">Your name</label>
-            <input id="name" name="name" type="text" placeholder="How may we address you?" required>
-          </div>
-          <div class="field">
-            <label for="email">Email or phone</label>
-            <input id="email" name="email" type="text" placeholder="So we can reach you back" required>
-          </div>
-          <div class="field">
-            <label for="service">What brings you here?</label>
-            <select id="service" name="service">
-              <option>Individual Counselling</option>
-              <option>Family Therapy</option>
-              <option>Child &amp; Adolescent Counselling</option>
-              <option>Group Therapy</option>
-              <option>Spiritual Direction</option>
-              <option>Mindfulness &amp; Training Programme</option>
-              <option>I'm not sure yet</option>
-            </select>
-          </div>
-
-          <button type="submit" class="btn btn--primary">Send message <span class="arrow">→</span></button>
-          <p class="form-note">Your message is confidential. We'll respond within two working days.</p>
-        </form>
-        <div class="form-success" id="formSuccess">
-          <div class="tick"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m5 12 5 5 9-11" />
-            </svg></div>
-          <h3>Thank you for reaching out</h3>
-          <p>Your message has reached us. Someone from our team will be in touch, gently and soon.</p>
-        </div>
       </div>
     </div>
   </section>
@@ -2278,29 +2111,38 @@
     <div class="wrap">
       <div class="foot-grid">
         <div class="foot-brand">
-          <div class="name">De Paul <br>Wellness Centre</div>
-          <p>A Vincentian sanctuary of healing and growth, restoring balance in body, mind, and soul for the
-            kerala community and beyond.</p>
+          <div class="name">De Paul Wellness Centre</div>
+          <p>A Vincentian sanctuary of healing and growth in Aluva, Ernakulam — compassionate counselling
+            and mental health care for all.</p>
         </div>
         <div class="foot-col">
-          <h4>Explore</h4>
-          <a href="/#about">About us</a>
-          <a href="/#services">Services</a>
-          <a href="/#team">Our team</a>
-          <a href="/#training">Training</a>
+          <h4>Quick Links</h4>
+          <a href="/">Home</a>
+          <a href="/contact/">Contact</a>
+          <a href="/blog/">Blog</a>
+          <a href="/services/">Services</a>
+          <a href="/training/">Training</a>
+
+
         </div>
         <div class="foot-col">
-          <h4>Support</h4>
-          <a href="/#blog">Blog</a>
-          <a href="/#testimonies">Testimonies</a>
-          <a href="/#contact">Book a session</a>
-          <a href="/#contact">Contact</a>
+          <h4>Services</h4>
+          <a href="/services/">Individual Counselling</a>
+          <a href="/services/">Family Therapy</a>
+          <a href="/services/">Child & Adolescent</a>
+          <a href="/services/">Group Therapy</a>
+          <a href="/services/">Online Sessions</a>
         </div>
         <div class="foot-col">
-          <h4>Find us</h4>
-          <a href="/#contact">Aluva, Ernakulam, Kerala, India</a>
-          <a href="/#contact">depaulwellness1625@gmail.com</a>
-          <a href="/#contact">+91 96336 91339</a>
+          <h4>Get in Touch</h4>
+          <div class="foot-actions">
+
+
+          </div>
+          <a href="mailto:depaulwellness1625@gmail.com">depaulwellness1625@gmail.com</a>
+          <a href="mailto:care@depaulwellness.com">care@depaulwellness.com</a>
+          <a href="https://maps.google.com/?q=Aluva,+Ernakulam,+Kerala" target="_blank" rel="noopener noreferrer">Aluva,
+            Ernakulam, Kerala</a>
           <div style="display:flex;gap:10px;margin-top:20px;">
             <a href="#"
               style="width:42px;height:42px;border-radius:14px;background:#16302a;display:grid;place-items:center;transition:all .3s;"
@@ -2351,11 +2193,10 @@
               </svg></a>
           </div>
         </div>
-
-      </div><br><br>
+      </div>
       <div class="foot-bottom">
-        <span>© 2026 De Paul Wellness Centre, Aluva. A Vincentian initiative.</span>
-        <span>Charity · Humility · Service</span>
+        <span>© 2026 De Paul Wellness Centre. All rights reserved.</span>
+        <span>Crafted with care in Aluva, Kerala</span>
       </div>
     </div>
   </footer>
