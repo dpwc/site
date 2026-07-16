@@ -5,6 +5,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blog · De Paul Wellness Centre, Aluva</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="shortcut icon" href="/favicon.ico">
     <meta name="description"
         content="Insights on mental health, mindfulness, positive psychology, and holistic well-being from De Paul Wellness Centre, Aluva, Ernakulam, Kerala, India" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1039,6 +1044,46 @@
             transform: translateY(-2px);
         }
 
+        .cta-band {
+            background: var(--evergreen);
+            color: var(--bone);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-band::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(80% 120% at 50% -20%, rgba(217, 166, 85, .14), transparent 60%);
+        }
+
+        .cta-band .wrap {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 650px;
+        }
+
+        .cta-band h2 {
+            color: #fff;
+            font-size: clamp(1.6rem, 3vw, 2.4rem);
+            margin-bottom: .6rem;
+        }
+
+        .cta-band p {
+            color: rgba(248, 244, 236, .75);
+            font-size: .95rem;
+            margin-bottom: 1.6rem;
+        }
+
+        .cta-band .cta-btns {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
         /* ---------- footer ---------- */
         footer {
             background: var(--evergreen);
@@ -1399,12 +1444,14 @@
                 </a>
                 <div class="nav-links" id="navLinks">
                     <a href="/">Home</a>
-                    <a href="/#about">About</a>
+                    <a href="/services/">Services</a>
+                    <a href="/training/">Training</a>
                     <a href="/blog" class="active">Blog</a>
-                    <a href="/#contact">Contact</a>
+                    <a href="/contact/">Contact</a>
+
                 </div>
                 <div class="nav-cta">
-                    <a href="/#book-session" class="btn btn--primary">Book a session <span
+                    <a href="/contact/#book-session" class="btn btn--primary">Schedule <span
                             class="arrow">&rarr;</span></a>
                     <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
                         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1499,39 +1546,99 @@
         </div>
     </section>
 
+
+
     <!-- ===== FOOTER ===== -->
     <footer>
         <div class="wrap">
             <div class="foot-grid">
                 <div class="foot-brand">
                     <div class="name">De Paul Wellness Centre</div>
-                    <p>A Vincentian initiative dedicated to mental health, holistic well-being, and compassionate care
-                        in Aluva, Kerala.</p>
+                    <p>A Vincentian sanctuary of healing and growth in Aluva, Ernakulam — compassionate counselling
+                        and mental health care for all.</p>
                 </div>
                 <div class="foot-col">
                     <h4>Quick Links</h4>
                     <a href="/">Home</a>
-                    <a href="/#about">About Us</a>
+                    <a href="/contact/">Contact</a>
                     <a href="/blog/">Blog</a>
-                    <a href="/#services">Services</a>
+                    <a href="/services/">Services</a>
+                    <a href="/training/">Training</a>
+
+
                 </div>
                 <div class="foot-col">
                     <h4>Services</h4>
-                    <a href="/#services">Individual Therapy</a>
-                    <a href="/#services">Family Counselling</a>
-                    <a href="/#services">Mindfulness Sessions</a>
-                    <a href="/#services">Workshops</a>
+                    <a href="/services/">Individual Counselling</a>
+                    <a href="/services/">Family Therapy</a>
+                    <a href="/services/">Child & Adolescent</a>
+                    <a href="/services/">Group Therapy</a>
+                    <a href="/services/">Online Sessions</a>
                 </div>
                 <div class="foot-col">
-                    <h4>Contact</h4>
-                    <a href="tel:+914842621234">+91 96336 91339</a>
+                    <h4>Get in Touch</h4>
+                    <div class="foot-actions">
+
+
+                    </div>
                     <a href="mailto:depaulwellness1625@gmail.com">depaulwellness1625@gmail.com</a>
-                    <a href="/#contact">Aluva, Kerala, India</a>
+                    <a href="mailto:care@depaulwellness.com">care@depaulwellness.com</a>
+                    <a href="https://maps.google.com/?q=Aluva,+Ernakulam,+Kerala" target="_blank"
+                        rel="noopener noreferrer">Aluva, Ernakulam, Kerala</a>
+                    <div style="display:flex;gap:10px;margin-top:20px;">
+                        <a href="#"
+                            style="width:42px;height:42px;border-radius:14px;background:#16302a;display:grid;place-items:center;transition:all .3s;"
+                            onmouseover="this.style.background='#f4efe5';this.querySelector('svg').style.stroke='#16302a'"
+                            onmouseout="this.style.background='#16302a';this.querySelector('svg').style.stroke='#f4efe5'"><svg
+                                width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4efe5"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" />
+                                <circle cx="12" cy="12" r="5" />
+                                <circle cx="17.5" cy="6.5" r="1.5" fill="#f4efe5" stroke="none" />
+                            </svg></a>
+                        <a href="#"
+                            style="width:42px;height:42px;border-radius:14px;background:#16302a;display:grid;place-items:center;transition:all .3s;"
+                            onmouseover="this.style.background='#f4efe5';this.querySelector('svg').style.stroke='#16302a'"
+                            onmouseout="this.style.background='#16302a';this.querySelector('svg').style.stroke='#f4efe5'"><svg
+                                width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4efe5"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
+                                <rect x="2" y="9" width="4" height="12" />
+                                <circle cx="4" cy="4" r="2" />
+                            </svg></a>
+                        <a href="#"
+                            style="width:42px;height:42px;border-radius:14px;background:#16302a;display:grid;place-items:center;transition:all .3s;"
+                            onmouseover="this.style.background='#f4efe5';this.querySelector('svg').style.stroke='#16302a'"
+                            onmouseout="this.style.background='#16302a';this.querySelector('svg').style.stroke='#f4efe5'"><svg
+                                width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4efe5"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M2.5 17a24.1 24.1 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.6 49.6 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.1 24.1 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.6 49.6 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
+                                <path d="m10 15 5-3-5-3z" />
+                            </svg></a>
+                        <a href="#"
+                            style="width:42px;height:42px;border-radius:14px;background:#16302a;display:grid;place-items:center;transition:all .3s;"
+                            onmouseover="this.style.background='#f4efe5';this.querySelector('svg').style.stroke='#16302a'"
+                            onmouseout="this.style.background='#16302a';this.querySelector('svg').style.stroke='#f4efe5'"><svg
+                                width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4efe5"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                            </svg></a>
+                        <a href="#"
+                            style="width:42px;height:42px;border-radius:14px;background:#16302a;display:grid;place-items:center;transition:all .3s;"
+                            onmouseover="this.style.background='#f4efe5';this.querySelector('svg').style.stroke='#16302a'"
+                            onmouseout="this.style.background='#16302a';this.querySelector('svg').style.stroke='#f4efe5'"><svg
+                                width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4efe5"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0Z" />
+                                <circle cx="12" cy="10" r="3" />
+                            </svg></a>
+                    </div>
                 </div>
             </div>
             <div class="foot-bottom">
-                <span>&copy; 2025 De Paul Wellness Centre. All rights reserved.</span>
-                <span>Crafted with care</span>
+                <span>© 2025 De Paul Wellness Centre. All rights reserved.</span>
+                <span>Crafted with care in Aluva, Kerala</span>
             </div>
         </div>
     </footer>
