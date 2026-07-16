@@ -971,6 +971,35 @@
       color: var(--bone);
     }
 
+    .cred--link {
+      background: rgba(217, 166, 85, .15);
+      border: 1px solid rgba(217, 166, 85, .4);
+      color: var(--honey-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: .45em;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .3s, border-color .3s, transform .3s var(--ease);
+    }
+
+    .cred--link:hover {
+      background: rgba(217, 166, 85, .28);
+      border-color: rgba(217, 166, 85, .65);
+      transform: translateY(-2px);
+    }
+
+    .cred--link svg {
+      width: 13px;
+      height: 13px;
+      flex: none;
+      transition: transform .3s var(--ease);
+    }
+
+    .cred--link:hover svg {
+      transform: translate(2px, -2px);
+    }
+
     /* ---------- blog ---------- */
     .blog-grid {
       display: grid;
@@ -1925,11 +1954,20 @@
           Positive Psychology from the American Board of Positive Psychology.</p>
 
         <div class="creds">
-
+          <a href="https://shijocm.com" target="_blank" class="cred cred--link">
+            Visit Website
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+          </a>
           <span class="cred">Doctorate, Canon Law (Spain)</span>
           <span class="cred">Doctorate, Positive Psychology (USA)</span>
           <span class="cred">Diplomate, Positive Psychology</span>
-          <span class="cred">Author &amp; Speaker</span>
+
+
         </div>
 
       </div>
