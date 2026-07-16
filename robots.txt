@@ -1,0 +1,6 @@
+# robots.txt for https://depaulwellness.com/
+User-agent: *
+Disallow: /admin/
+
+# Allow search engines to access the sitemap
+Sitemap: https://depaulwellness.com/sitemap.xml
