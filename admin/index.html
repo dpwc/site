@@ -854,6 +854,7 @@
                             <path d="m1 1 22 22" />
                         </svg>
                     </button>
+
                 </div>
             </div>
 
@@ -892,6 +893,28 @@
                     Blogs
                 </button>
 
+                <button class="nav-item" data-tab="inquiry">
+                    <span class="nav-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="20" height="16" x="2" y="4" rx="2" />
+                            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                        </svg>
+                    </span>
+                    Inquiry
+                </button>
+                <button class="nav-item" data-tab="subscribers">
+                    <span class="nav-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                    </span>
+                    Subscribers
+                </button>
 
             </nav>
 
@@ -2954,400 +2977,498 @@
                         })();
                     </script>
                 </div>
-                <div class="tab-panel" id="tab-subscribers">
-                    <!-- ===== SUBSCRIBERS SECTION ===== -->
-                    <style>
+                <!-- Subscribers Section -->
+                <style>
+                    .sub-section {
+                        padding: 24px;
+                        min-height: 100vh;
+                        display: flex;
+                        flex-direction: column;
+                    }
+
+                    .sub-header {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        flex-wrap: wrap;
+                        gap: 14px;
+                        margin-bottom: 20px;
+                    }
+
+                    .sub-header-left {
+                        display: flex;
+                        align-items: baseline;
+                        gap: 14px;
+                    }
+
+                    .sub-header-left h2 {
+                        font-size: 1.5rem;
+                        color: var(--evergreen);
+                    }
+
+                    .sub-count {
+                        font-size: .84rem;
+                        color: var(--ink-soft);
+                        font-weight: 500;
+                    }
+
+                    .sub-count b {
+                        color: var(--honey);
+                        font-weight: 700;
+                    }
+
+                    .sub-copy-all-btn {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        font-family: "Mulish", sans-serif;
+                        font-weight: 600;
+                        font-size: .84rem;
+                        padding: .65em 1.3em;
+                        border-radius: 100px;
+                        cursor: pointer;
+                        border: 1px solid var(--honey);
+                        background: var(--honey);
+                        color: #fff;
+                        box-shadow: 0 10px 24px -10px rgba(188, 127, 55, .7);
+                        transition: transform .35s var(--ease), background .3s, box-shadow .35s;
+                    }
+
+                    .sub-copy-all-btn:hover {
+                        transform: translateY(-2px);
+                        background: #a96f2c;
+                        box-shadow: 0 16px 32px -12px rgba(188, 127, 55, .85);
+                    }
+
+                    .sub-copy-all-btn.copied {
+                        background: var(--sage);
+                        border-color: var(--sage);
+                        box-shadow: 0 10px 24px -10px rgba(126, 152, 133, .6);
+                    }
+
+                    .sub-copy-all-btn svg {
+                        flex: none;
+                    }
+
+                    /* Search bar */
+                    .sub-search-wrap {
+                        position: relative;
+                        margin-bottom: 16px;
+                        max-width: 360px;
+                        width: 100%;
+                    }
+
+                    .sub-search-wrap svg {
+                        position: absolute;
+                        left: 14px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        color: var(--ink-soft);
+                        pointer-events: none;
+                    }
+
+                    .sub-search-input {
+                        width: 100%;
+                        padding: .7em 1em .7em 42px;
+                        border: 1px solid var(--line);
+                        border-radius: 14px;
+                        background: var(--bone);
+                        font-family: "Mulish", sans-serif;
+                        font-size: .88rem;
+                        color: var(--ink);
+                        transition: border-color .3s, box-shadow .3s;
+                    }
+
+                    .sub-search-input:focus {
+                        outline: none;
+                        border-color: var(--honey);
+                        box-shadow: 0 0 0 3px rgba(188, 127, 55, .12);
+                    }
+
+                    .sub-search-input::placeholder {
+                        color: var(--ink-soft);
+                        opacity: .7;
+                    }
+
+                    /* List */
+                    .sub-list {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 8px;
+                        flex: 1;
+                    }
+
+                    .sub-item {
+                        display: flex;
+                        align-items: center;
+                        gap: 14px;
+                        padding: 14px 18px;
+                        background: var(--surface);
+                        border: 1px solid var(--line);
+                        border-radius: 16px;
+                        transition: box-shadow .3s var(--ease), transform .3s var(--ease);
+                        animation: subIn .4s var(--ease) both;
+                    }
+
+                    .sub-item:hover {
+                        box-shadow: var(--shadow-soft);
+                        transform: translateY(-1px);
+                    }
+
+                    @keyframes subIn {
+                        from {
+                            opacity: 0;
+                            transform: translateY(10px);
+                        }
+
+                        to {
+                            opacity: 1;
+                            transform: none;
+                        }
+                    }
+
+                    .sub-item-index {
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 10px;
+                        background: linear-gradient(135deg, var(--sage-soft), #e8ede5);
+                        display: grid;
+                        place-items: center;
+                        font-size: .76rem;
+                        font-weight: 700;
+                        color: var(--evergreen);
+                        flex: none;
+                    }
+
+                    .sub-item-info {
+                        flex: 1;
+                        min-width: 0;
+                    }
+
+                    .sub-item-email {
+                        font-weight: 600;
+                        font-size: .9rem;
+                        color: var(--evergreen);
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+
+                    .sub-item-date {
+                        font-size: .75rem;
+                        color: var(--ink-soft);
+                        margin-top: 2px;
+                    }
+
+                    .sub-copy-btn {
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 10px;
+                        border: 1px solid var(--line);
+                        background: var(--bone);
+                        color: var(--ink-soft);
+                        display: grid;
+                        place-items: center;
+                        cursor: pointer;
+                        flex: none;
+                        transition: all .25s var(--ease);
+                    }
+
+                    .sub-copy-btn:hover {
+                        background: var(--sage-soft);
+                        color: var(--evergreen);
+                        border-color: var(--sage);
+                        transform: scale(1.08);
+                    }
+
+                    .sub-copy-btn.copied {
+                        background: var(--sage);
+                        border-color: var(--sage);
+                        color: #fff;
+                    }
+
+                    .sub-copy-btn svg {
+                        width: 16px;
+                        height: 16px;
+                    }
+
+                    /* Loading */
+                    .sub-loading {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 14px;
+                        padding: 80px 20px;
+                        color: var(--ink-soft);
+                    }
+
+                    .sub-spinner {
+                        width: 36px;
+                        height: 36px;
+                        border: 3px solid var(--line);
+                        border-top-color: var(--honey);
+                        border-radius: 50%;
+                        animation: spin .7s linear infinite;
+                    }
+
+                    @keyframes spin {
+                        to {
+                            transform: rotate(360deg);
+                        }
+                    }
+
+                    .sub-loading p {
+                        font-size: .88rem;
+                        font-weight: 500;
+                    }
+
+                    /* Empty */
+                    .sub-empty {
+                        display: none;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 12px;
+                        padding: 80px 20px;
+                        color: var(--ink-soft);
+                        text-align: center;
+                    }
+
+                    .sub-empty svg {
+                        opacity: .3;
+                    }
+
+                    .sub-empty h3 {
+                        font-size: 1.15rem;
+                        color: var(--evergreen);
+                    }
+
+                    .sub-empty p {
+                        font-size: .88rem;
+                    }
+
+                    .sub-empty.show {
+                        display: flex;
+                    }
+
+                    /* Error */
+                    .sub-error {
+                        display: none;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 12px;
+                        padding: 60px 20px;
+                        color: var(--ink-soft);
+                        text-align: center;
+                    }
+
+                    .sub-error svg {
+                        opacity: .35;
+                        color: #c0392b;
+                    }
+
+                    .sub-error h3 {
+                        font-size: 1.15rem;
+                        color: #c0392b;
+                    }
+
+                    .sub-error p {
+                        font-size: .84rem;
+                        max-width: 400px;
+                        line-height: 1.5;
+                        word-break: break-word;
+                    }
+
+                    .sub-error .sub-retry-btn {
+                        margin-top: 4px;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        font-family: "Mulish", sans-serif;
+                        font-weight: 600;
+                        font-size: .82rem;
+                        padding: .55em 1.2em;
+                        border-radius: 100px;
+                        cursor: pointer;
+                        border: 1px solid var(--line);
+                        background: var(--surface);
+                        color: var(--evergreen);
+                        transition: all .25s var(--ease);
+                    }
+
+                    .sub-error .sub-retry-btn:hover {
+                        border-color: var(--honey);
+                        background: var(--bone);
+                        transform: translateY(-1px);
+                    }
+
+                    .sub-error.show {
+                        display: flex;
+                    }
+
+                    /* No results */
+                    .sub-no-results {
+                        display: none;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 8px;
+                        padding: 50px 20px;
+                        color: var(--ink-soft);
+                        text-align: center;
+                    }
+
+                    .sub-no-results.show {
+                        display: flex;
+                    }
+
+                    .sub-no-results p {
+                        font-size: .9rem;
+                    }
+
+                    @media (max-width: 768px) {
                         .sub-section {
-                            padding: 24px;
-                            min-height: 100vh;
-                            display: flex;
-                            flex-direction: column;
+                            padding: 16px;
                         }
 
                         .sub-header {
-                            display: flex;
-                            align-items: center;
-                            justify-content: space-between;
-                            flex-wrap: wrap;
-                            gap: 14px;
-                            margin-bottom: 20px;
-                        }
-
-                        .sub-header-left {
-                            display: flex;
-                            align-items: baseline;
-                            gap: 14px;
-                        }
-
-                        .sub-header-left h2 {
-                            font-size: 1.5rem;
-                            color: var(--evergreen);
-                        }
-
-                        .sub-count {
-                            font-size: .84rem;
-                            color: var(--ink-soft);
-                            font-weight: 500;
-                        }
-
-                        .sub-count b {
-                            color: var(--honey);
-                            font-weight: 700;
+                            flex-direction: column;
+                            align-items: flex-start;
                         }
 
                         .sub-copy-all-btn {
-                            display: inline-flex;
-                            align-items: center;
-                            gap: 8px;
-                            font-family: "Mulish", sans-serif;
-                            font-weight: 600;
-                            font-size: .84rem;
-                            padding: .65em 1.3em;
-                            border-radius: 100px;
-                            cursor: pointer;
-                            border: 1px solid var(--honey);
-                            background: var(--honey);
-                            color: #fff;
-                            box-shadow: 0 10px 24px -10px rgba(188, 127, 55, .7);
-                            transition: transform .35s var(--ease), background .3s, box-shadow .35s;
+                            width: 100%;
+                            justify-content: center;
                         }
 
-                        .sub-copy-all-btn:hover {
-                            transform: translateY(-2px);
-                            background: #a96f2c;
-                            box-shadow: 0 16px 32px -12px rgba(188, 127, 55, .85);
-                        }
-
-                        .sub-copy-all-btn.copied {
-                            background: var(--sage);
-                            border-color: var(--sage);
-                            box-shadow: 0 10px 24px -10px rgba(126, 152, 133, .6);
-                        }
-
-                        .sub-copy-all-btn svg {
-                            flex: none;
-                        }
-
-                        /* Search bar */
                         .sub-search-wrap {
-                            position: relative;
-                            margin-bottom: 16px;
-                            max-width: 360px;
-                            width: 100%;
-                        }
-
-                        .sub-search-wrap svg {
-                            position: absolute;
-                            left: 14px;
-                            top: 50%;
-                            transform: translateY(-50%);
-                            color: var(--ink-soft);
-                            pointer-events: none;
-                        }
-
-                        .sub-search-input {
-                            width: 100%;
-                            padding: .7em 1em .7em 42px;
-                            border: 1px solid var(--line);
-                            border-radius: 14px;
-                            background: var(--bone);
-                            font-family: "Mulish", sans-serif;
-                            font-size: .88rem;
-                            color: var(--ink);
-                            transition: border-color .3s, box-shadow .3s;
-                        }
-
-                        .sub-search-input:focus {
-                            outline: none;
-                            border-color: var(--honey);
-                            box-shadow: 0 0 0 3px rgba(188, 127, 55, .12);
-                        }
-
-                        .sub-search-input::placeholder {
-                            color: var(--ink-soft);
-                            opacity: .7;
-                        }
-
-                        /* List */
-                        .sub-list {
-                            display: flex;
-                            flex-direction: column;
-                            gap: 8px;
-                            flex: 1;
+                            max-width: 100%;
                         }
 
                         .sub-item {
-                            display: flex;
-                            align-items: center;
-                            gap: 14px;
-                            padding: 14px 18px;
-                            background: var(--surface);
-                            border: 1px solid var(--line);
-                            border-radius: 16px;
-                            transition: box-shadow .3s var(--ease), transform .3s var(--ease);
-                            animation: subIn .4s var(--ease) both;
+                            padding: 12px 14px;
+                            gap: 10px;
                         }
+                    }
+                </style>
+                <div class="tab-panel" id="tab-subscribers">
+                    <div class="sub-section">
 
-                        .sub-item:hover {
-                            box-shadow: var(--shadow-soft);
-                            transform: translateY(-1px);
-                        }
-
-                        @keyframes subIn {
-                            from {
-                                opacity: 0;
-                                transform: translateY(10px);
-                            }
-
-                            to {
-                                opacity: 1;
-                                transform: none;
-                            }
-                        }
-
-                        .sub-item-index {
-                            width: 32px;
-                            height: 32px;
-                            border-radius: 10px;
-                            background: linear-gradient(135deg, var(--sage-soft), #e8ede5);
-                            display: grid;
-                            place-items: center;
-                            font-size: .76rem;
-                            font-weight: 700;
-                            color: var(--evergreen);
-                            flex: none;
-                        }
-
-                        .sub-item-info {
-                            flex: 1;
-                            min-width: 0;
-                        }
-
-                        .sub-item-email {
-                            font-weight: 600;
-                            font-size: .9rem;
-                            color: var(--evergreen);
-                            white-space: nowrap;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                        }
-
-                        .sub-item-date {
-                            font-size: .75rem;
-                            color: var(--ink-soft);
-                            margin-top: 2px;
-                        }
-
-                        .sub-copy-btn {
-                            width: 36px;
-                            height: 36px;
-                            border-radius: 10px;
-                            border: 1px solid var(--line);
-                            background: var(--bone);
-                            color: var(--ink-soft);
-                            display: grid;
-                            place-items: center;
-                            cursor: pointer;
-                            flex: none;
-                            transition: all .25s var(--ease);
-                        }
-
-                        .sub-copy-btn:hover {
-                            background: var(--sage-soft);
-                            color: var(--evergreen);
-                            border-color: var(--sage);
-                            transform: scale(1.08);
-                        }
-
-                        .sub-copy-btn.copied {
-                            background: var(--sage);
-                            border-color: var(--sage);
-                            color: #fff;
-                        }
-
-                        .sub-copy-btn svg {
-                            width: 16px;
-                            height: 16px;
-                        }
-
-                        /* Loading */
-                        .sub-loading {
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            justify-content: center;
-                            gap: 14px;
-                            padding: 80px 20px;
-                            color: var(--ink-soft);
-                        }
-
-                        .sub-spinner {
-                            width: 36px;
-                            height: 36px;
-                            border: 3px solid var(--line);
-                            border-top-color: var(--honey);
-                            border-radius: 50%;
-                            animation: spin .7s linear infinite;
-                        }
-
-                        @keyframes spin {
-                            to {
-                                transform: rotate(360deg);
-                            }
-                        }
-
-                        .sub-loading p {
-                            font-size: .88rem;
-                            font-weight: 500;
-                        }
-
-                        /* Empty */
-                        .sub-empty {
-                            display: none;
-                            flex-direction: column;
-                            align-items: center;
-                            gap: 12px;
-                            padding: 80px 20px;
-                            color: var(--ink-soft);
-                            text-align: center;
-                        }
-
-                        .sub-empty svg {
-                            opacity: .3;
-                        }
-
-                        .sub-empty h3 {
-                            font-size: 1.15rem;
-                            color: var(--evergreen);
-                        }
-
-                        .sub-empty p {
-                            font-size: .88rem;
-                        }
-
-                        .sub-empty.show {
-                            display: flex;
-                        }
-
-                        /* No results */
-                        .sub-no-results {
-                            display: none;
-                            flex-direction: column;
-                            align-items: center;
-                            gap: 8px;
-                            padding: 50px 20px;
-                            color: var(--ink-soft);
-                            text-align: center;
-                        }
-
-                        .sub-no-results.show {
-                            display: flex;
-                        }
-
-                        .sub-no-results p {
-                            font-size: .9rem;
-                        }
-
-                        @media (max-width: 768px) {
-                            .sub-section {
-                                padding: 16px;
-                            }
-
-                            .sub-header {
-                                flex-direction: column;
-                                align-items: flex-start;
-                            }
-
-                            .sub-copy-all-btn {
-                                width: 100%;
-                                justify-content: center;
-                            }
-
-                            .sub-search-wrap {
-                                max-width: 100%;
-                            }
-
-                            .sub-item {
-                                padding: 12px 14px;
-                                gap: 10px;
-                            }
-                        }
-                    </style>
-
-                    <div class="tab-panel" id="tab-subscribers">
-                        <div class="sub-section">
-
-                            <div class="sub-header">
-                                <div class="sub-header-left">
-                                    <h2>Subscribers</h2>
-                                    <span class="sub-count" id="subCount"><b>0</b> total</span>
-                                </div>
-                                <button class="sub-copy-all-btn" id="subCopyAll" title="Copy all emails">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                        <div class="sub-header">
+                            <div class="sub-header-left">
+                                <h2>Subscribers</h2>
+                                <span class="sub-count" id="subCount"><b>0</b> total</span>
+                                <style>
+                                    @media(max-width:768px) {
+                                        #mobileMenuBtn {
+                                            display: grid !important;
+                                        }
+                                    }
+                                </style>
+                                <button id="mobileMenuBtn"
+                                    onclick="document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('active')"
+                                    style="display:none;background:none;border:1px solid var(--line);border-radius:10px;padding:8px;cursor:pointer;color:var(--evergreen);width:40px;height:40px;place-items:center">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round">
+                                        <line x1="4" y1="6" x2="20" y2="6" />
+                                        <line x1="4" y1="12" x2="20" y2="12" />
+                                        <line x1="4" y1="18" x2="20" y2="18" />
                                     </svg>
-                                    <span>Copy All Emails</span>
                                 </button>
-                            </div>
+                                <script>
+                                    document.getElementById('sidebarOverlay').addEventListener('click', function () {
+                                        document.getElementById('sidebar').classList.remove('open');
+                                        this.classList.remove('active');
+                                    });
+                                </script>
 
-                            <div class="sub-search-wrap">
+                            </div>
+                            <button class="sub-copy-all-btn" id="subCopyAll" title="Copy all emails">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="11" cy="11" r="8" />
-                                    <path d="m21 21-4.3-4.3" />
+                                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
                                 </svg>
-                                <input type="text" class="sub-search-input" id="subSearch"
-                                    placeholder="Search by email..." />
-                            </div>
-
-                            <div class="sub-list" id="subList">
-                                <div class="sub-loading" id="subLoading">
-                                    <div class="sub-spinner"></div>
-                                    <p>Loading subscribers...</p>
-                                </div>
-                            </div>
-
-                            <div class="sub-empty" id="subEmpty">
-                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                    <circle cx="9" cy="7" r="4" />
-                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                </svg>
-                                <h3>No subscribers yet</h3>
-                                <p>New subscribers will appear here automatically.</p>
-                            </div>
-
-                            <div class="sub-no-results" id="subNoResults">
-                                <p>No subscribers match your search.</p>
-                            </div>
-
+                                <span>Copy All Emails</span>
+                            </button>
                         </div>
-                    </div>
 
+                        <div class="sub-search-wrap">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="m21 21-4.3-4.3" />
+                            </svg>
+                            <input type="text" class="sub-search-input" id="subSearch"
+                                placeholder="Search by email..." />
+                        </div>
+
+                        <div class="sub-list" id="subList"></div>
+
+                        <div class="sub-loading" id="subLoading">
+                            <div class="sub-spinner"></div>
+                            <p>Loading subscribers...</p>
+                        </div>
+
+                        <div class="sub-empty" id="subEmpty">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                            <h3>No subscribers yet</h3>
+                            <p>New subscribers will appear here automatically.</p>
+                        </div>
+
+                        <div class="sub-error" id="subError">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="8" x2="12" y2="12" />
+                                <line x1="12" y1="16" x2="12.01" y2="16" />
+                            </svg>
+                            <h3>Failed to load subscribers</h3>
+                            <p id="subErrorMsg">Something went wrong.</p>
+                            <button class="sub-retry-btn" id="subRetryBtn">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="23 4 23 10 17 10" />
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                                </svg>
+                                <span>Retry</span>
+                            </button>
+                        </div>
+
+                        <div class="sub-no-results" id="subNoResults">
+                            <p>No subscribers match your search.</p>
+                        </div>
+
+                    </div>
                     <script>
                         (function () {
-                            const subList = document.getElementById('subList');
-                            const subLoading = document.getElementById('subLoading');
-                            const subEmpty = document.getElementById('subEmpty');
-                            const subNoResults = document.getElementById('subNoResults');
-                            const subCount = document.getElementById('subCount');
-                            const subCopyAll = document.getElementById('subCopyAll');
-                            const subSearch = document.getElementById('subSearch');
+                            var subList = document.getElementById('subList');
+                            var subLoading = document.getElementById('subLoading');
+                            var subEmpty = document.getElementById('subEmpty');
+                            var subError = document.getElementById('subError');
+                            var subErrorMsg = document.getElementById('subErrorMsg');
+                            var subRetryBtn = document.getElementById('subRetryBtn');
+                            var subNoResults = document.getElementById('subNoResults');
+                            var subCount = document.getElementById('subCount');
+                            var subCopyAll = document.getElementById('subCopyAll');
+                            var subSearch = document.getElementById('subSearch');
 
-                            let allSubscribers = [];
+                            var allSubscribers = [];
+                            var isLoading = false;
 
                             function formatDate(timestamp) {
                                 if (!timestamp) return 'Unknown';
-                                const d = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+                                var d = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
                                 return d.toLocaleDateString('en-IN', {
                                     day: 'numeric',
                                     month: 'short',
                                     year: 'numeric'
-                                }) + ' · ' + d.toLocaleTimeString('en-IN', {
+                                }) + ' \u00B7 ' + d.toLocaleTimeString('en-IN', {
                                     hour: '2-digit',
                                     minute: '2-digit',
                                     hour12: true
@@ -3356,7 +3477,6 @@
 
                             function renderList(subs) {
                                 subList.innerHTML = '';
-
                                 if (subs.length === 0) return;
 
                                 subs.forEach(function (sub, i) {
@@ -3411,19 +3531,27 @@
                                 }
                             }
 
-                            function showState(state) {
+                            function hideAllStates() {
                                 subLoading.style.display = 'none';
                                 subEmpty.classList.remove('show');
+                                subError.classList.remove('show');
                                 subNoResults.classList.remove('show');
+                            }
+
+                            function showState(state, errMsg) {
+                                hideAllStates();
                                 subList.innerHTML = '';
 
                                 if (state === 'loading') {
-                                    subLoading.style.display = 'flex';
                                     subList.appendChild(subLoading);
+                                    subLoading.style.display = 'flex';
                                 } else if (state === 'empty') {
                                     subEmpty.classList.add('show');
                                 } else if (state === 'no-results') {
                                     subNoResults.classList.add('show');
+                                } else if (state === 'error') {
+                                    subErrorMsg.textContent = errMsg || 'Something went wrong.';
+                                    subError.classList.add('show');
                                 }
                             }
 
@@ -3432,16 +3560,26 @@
                             }
 
                             function loadSubscribers() {
+                                if (isLoading) return;
+
+                                if (typeof db === 'undefined') {
+                                    showState('error', 'Firebase is not initialized. Make sure the Firebase SDK and config script are loaded before this section.');
+                                    console.error('Firebase db is undefined');
+                                    return;
+                                }
+
+                                isLoading = true;
                                 showState('loading');
 
-                                db.collection('subscribers').orderBy('date', 'desc').get()
+                                db.collection('subscribers').orderBy('subscribedAt', 'desc').get()
                                     .then(function (snapshot) {
+                                        isLoading = false;
                                         allSubscribers = [];
                                         snapshot.forEach(function (doc) {
                                             var data = doc.data();
                                             allSubscribers.push({
                                                 email: data.email || '',
-                                                date: data.date || null
+                                                date: data.subscribedAt || null
                                             });
                                         });
 
@@ -3450,17 +3588,31 @@
                                         if (allSubscribers.length === 0) {
                                             showState('empty');
                                         } else {
-                                            subLoading.style.display = 'none';
+                                            hideAllStates();
                                             renderList(allSubscribers);
                                         }
                                     })
                                     .catch(function (err) {
-                                        console.error('Error loading subscribers:', err);
-                                        showState('empty');
+                                        isLoading = false;
+                                        console.error('Firestore error loading subscribers:', err.code, err.message);
+
+                                        var msg = err.message || 'Unknown error';
+                                        if (err.code === 'permission-denied') {
+                                            msg = 'Permission denied. Your Firestore security rules do not allow reading the "subscribers" collection.';
+                                        } else if (err.code === 'not-found') {
+                                            msg = 'The "subscribers" collection does not exist yet in your Firestore database.';
+                                        } else if (err.code === 'unauthenticated') {
+                                            msg = 'This collection requires authentication. Either sign in or update your Firestore security rules.';
+                                        }
+
+                                        showState('error', msg);
                                     });
                             }
 
-                            // Copy all emails
+                            subRetryBtn.addEventListener('click', function () {
+                                loadSubscribers();
+                            });
+
                             subCopyAll.addEventListener('click', function () {
                                 if (allSubscribers.length === 0) return;
                                 var emails = allSubscribers.map(function (s) { return s.email; }).join(', ');
@@ -3475,15 +3627,13 @@
                                 }, 2000);
                             });
 
-                            // Search
                             subSearch.addEventListener('input', function () {
                                 var q = this.value.toLowerCase().trim();
                                 if (q === '') {
                                     if (allSubscribers.length === 0) {
                                         showState('empty');
                                     } else {
-                                        subEmpty.classList.remove('show');
-                                        subNoResults.classList.remove('show');
+                                        hideAllStates();
                                         renderList(allSubscribers);
                                     }
                                     return;
@@ -3494,32 +3644,1727 @@
                                 });
 
                                 if (filtered.length === 0) {
-                                    showState('no-results');
+                                    hideAllStates();
+                                    subList.innerHTML = '';
+                                    subNoResults.classList.add('show');
                                 } else {
-                                    subEmpty.classList.remove('show');
-                                    subNoResults.classList.remove('show');
+                                    hideAllStates();
                                     renderList(filtered);
                                 }
                             });
 
-                            // Load on tab switch
                             document.querySelectorAll('.nav-item[data-tab="subscribers"]').forEach(function (btn) {
                                 btn.addEventListener('click', function () {
-                                    if (allSubscribers.length === 0 && subList.querySelector('.sub-loading')) {
+                                    if (allSubscribers.length === 0 && !isLoading) {
                                         loadSubscribers();
                                     }
                                 });
                             });
 
-                            // Initial load (in case subscribers tab is somehow active)
                             loadSubscribers();
                         })();
                     </script>
                 </div>
-                <div class="tab-panel" id="tab-inquiry"></div>
-                <div class="tab-panel" id="tab-bookings"></div>
+            </div>
+            <div class="tab-panel" id="tab-inquiry">
+
+                <style>
+                    /* ===== Inquiry Section Styles ===== */
+                    .inq-header {
+                        display: flex;
+                        align-items: flex-start;
+                        justify-content: space-between;
+                        flex-wrap: wrap;
+                        gap: 16px;
+                        padding: 28px 28px 0;
+                    }
+
+                    .inq-header-left h2 {
+                        font-size: 1.55rem;
+                        color: var(--evergreen);
+                        margin-bottom: 4px;
+                    }
+
+                    .inq-header-left p {
+                        font-size: .85rem;
+                        color: var(--ink-soft);
+                    }
+
+                    .inq-stats {
+                        display: flex;
+                        gap: 10px;
+                        flex-wrap: wrap;
+                    }
+
+                    .inq-stat {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        padding: 12px 20px;
+                        background: var(--surface);
+                        border: 1px solid var(--line);
+                        border-radius: 14px;
+                        min-width: 90px;
+                        transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+                    }
+
+                    .inq-stat:hover {
+                        transform: translateY(-2px);
+                        box-shadow: var(--shadow-soft);
+                    }
+
+                    .inq-stat-num {
+                        font-family: "Fraunces", Georgia, serif;
+                        font-size: 1.5rem;
+                        font-weight: 500;
+                        color: var(--evergreen);
+                        line-height: 1;
+                    }
+
+                    .inq-stat-num.unread-num {
+                        color: var(--honey);
+                    }
+
+                    .inq-stat-label {
+                        font-size: .7rem;
+                        font-weight: 600;
+                        letter-spacing: .06em;
+                        text-transform: uppercase;
+                        color: var(--ink-soft);
+                        margin-top: 4px;
+                    }
+
+                    /* Filters */
+                    .inq-filters {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 18px 28px 0;
+                        flex-wrap: wrap;
+                    }
+
+                    .inq-search {
+                        flex: 1;
+                        min-width: 200px;
+                        position: relative;
+                    }
+
+                    .inq-search svg {
+                        position: absolute;
+                        left: 14px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        color: var(--ink-soft);
+                        pointer-events: none;
+                        transition: color .3s;
+                    }
+
+                    .inq-search input {
+                        width: 100%;
+                        padding: .7em 1em .7em 42px;
+                        border: 1px solid var(--line);
+                        border-radius: 12px;
+                        background: var(--surface);
+                        font-family: "Mulish", sans-serif;
+                        font-size: .88rem;
+                        color: var(--ink);
+                        transition: border-color .3s, box-shadow .3s;
+                    }
+
+                    .inq-search input:focus {
+                        outline: none;
+                        border-color: var(--honey);
+                        box-shadow: 0 0 0 3px rgba(188, 127, 55, .12);
+                    }
+
+                    .inq-search input:focus+svg,
+                    .inq-search input:focus~svg {
+                        color: var(--honey);
+                    }
+
+                    .inq-filter-btn {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        padding: .65em 1.1em;
+                        border: 1px solid var(--line);
+                        border-radius: 12px;
+                        background: var(--surface);
+                        color: var(--ink-soft);
+                        font-family: "Mulish", sans-serif;
+                        font-size: .82rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all .3s var(--ease);
+                        white-space: nowrap;
+                    }
+
+                    .inq-filter-btn:hover {
+                        border-color: var(--evergreen);
+                        color: var(--evergreen);
+                        transform: translateY(-1px);
+                    }
+
+                    .inq-filter-btn.active {
+                        background: var(--evergreen);
+                        color: #fff;
+                        border-color: var(--evergreen);
+                    }
+
+                    .inq-filter-btn .filter-count {
+                        background: rgba(255, 255, 255, .2);
+                        padding: 1px 7px;
+                        border-radius: 100px;
+                        font-size: .72rem;
+                        font-weight: 700;
+                    }
+
+                    .inq-filter-btn.active .filter-count {
+                        background: rgba(255, 255, 255, .25);
+                    }
+
+                    .inq-filter-btn:not(.active) .filter-count {
+                        background: rgba(22, 48, 42, .08);
+                    }
+
+                    /* Card list */
+                    .inq-list {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 14px;
+                        padding: 18px 28px 40px;
+                    }
+
+                    /* Individual card */
+                    .inq-card {
+                        background: var(--surface);
+                        border: 1px solid var(--line);
+                        border-radius: 18px;
+                        padding: 20px 22px;
+                        position: relative;
+                        overflow: hidden;
+                        transition: box-shadow .35s var(--ease), transform .35s var(--ease), border-color .3s;
+                        cursor: default;
+                        animation: inqCardIn .45s var(--ease) both;
+                    }
+
+                    @keyframes inqCardIn {
+                        from {
+                            opacity: 0;
+                            transform: translateY(12px) scale(.99);
+                        }
+
+                        to {
+                            opacity: 1;
+                            transform: none;
+                        }
+                    }
+
+                    .inq-card:hover {
+                        box-shadow: var(--shadow-soft);
+                        transform: translateY(-2px);
+                    }
+
+                    /* Unread indicator */
+                    .inq-card.unread {
+                        border-left: 4px solid var(--honey);
+                        background: linear-gradient(135deg, rgba(188, 127, 55, .04), var(--surface) 40%);
+                    }
+
+                    .inq-card.unread:hover {
+                        border-left-color: var(--honey);
+                    }
+
+                    .inq-unread-dot {
+                        position: absolute;
+                        top: 22px;
+                        right: 22px;
+                        width: 10px;
+                        height: 10px;
+                        border-radius: 50%;
+                        background: var(--honey);
+                        box-shadow: 0 0 0 3px rgba(188, 127, 55, .2);
+                        animation: dotPulse 2s ease-in-out infinite;
+                    }
+
+                    @keyframes dotPulse {
+
+                        0%,
+                        100% {
+                            box-shadow: 0 0 0 3px rgba(188, 127, 55, .2);
+                        }
+
+                        50% {
+                            box-shadow: 0 0 0 6px rgba(188, 127, 55, .08);
+                        }
+                    }
+
+                    /* Card top row */
+                    .inq-card-top {
+                        display: flex;
+                        align-items: flex-start;
+                        justify-content: space-between;
+                        gap: 12px;
+                        margin-bottom: 14px;
+                    }
+
+                    .inq-card-name {
+                        font-family: "Fraunces", Georgia, serif;
+                        font-size: 1.15rem;
+                        font-weight: 500;
+                        color: var(--evergreen);
+                        line-height: 1.2;
+                    }
+
+                    .inq-card.unread .inq-card-name {
+                        font-weight: 600;
+                    }
+
+                    .inq-card-time {
+                        font-size: .75rem;
+                        color: var(--ink-soft);
+                        white-space: nowrap;
+                        flex-shrink: 0;
+                        margin-top: 3px;
+                    }
+
+                    /* Detail grid */
+                    .inq-details {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                        gap: 10px 24px;
+                        margin-bottom: 16px;
+                    }
+
+                    .inq-detail {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 2px;
+                    }
+
+                    .inq-detail-label {
+                        font-size: .68rem;
+                        font-weight: 700;
+                        letter-spacing: .08em;
+                        text-transform: uppercase;
+                        color: var(--ink-soft);
+                    }
+
+                    .inq-detail-value {
+                        font-size: .9rem;
+                        color: var(--ink);
+                        font-weight: 500;
+                        word-break: break-word;
+                    }
+
+                    .inq-detail-value a {
+                        color: var(--evergreen);
+                        text-decoration: none;
+                        transition: color .2s;
+                    }
+
+                    .inq-detail-value a:hover {
+                        color: var(--honey);
+                        text-decoration: underline;
+                    }
+
+                    .inq-service-tag {
+                        display: inline-block;
+                        background: rgba(126, 152, 133, .15);
+                        color: var(--evergreen-2);
+                        font-weight: 600;
+                        font-size: .82rem;
+                        padding: .15em .65em;
+                        border-radius: 8px;
+                    }
+
+                    .inq-mode-tag {
+                        display: inline-block;
+                        background: rgba(188, 127, 55, .1);
+                        color: var(--honey);
+                        font-weight: 600;
+                        font-size: .82rem;
+                        padding: .15em .65em;
+                        border-radius: 8px;
+                    }
+
+                    /* Card actions */
+                    .inq-card-actions {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        padding-top: 14px;
+                        border-top: 1px solid var(--line);
+                        flex-wrap: wrap;
+                    }
+
+                    .inq-act-btn {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        padding: .55em 1em;
+                        border-radius: 10px;
+                        border: 1px solid var(--line);
+                        background: var(--bone);
+                        color: var(--ink-soft);
+                        font-family: "Mulish", sans-serif;
+                        font-size: .8rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all .25s var(--ease);
+                        white-space: nowrap;
+                    }
+
+                    .inq-act-btn svg {
+                        flex: none;
+                    }
+
+                    .inq-act-btn:hover {
+                        transform: translateY(-1px);
+                    }
+
+                    .inq-act-btn--call:hover {
+                        background: rgba(126, 152, 133, .15);
+                        color: var(--evergreen);
+                        border-color: var(--sage);
+                    }
+
+                    .inq-act-btn--mail:hover {
+                        background: rgba(188, 127, 55, .1);
+                        color: var(--honey);
+                        border-color: var(--honey);
+                    }
+
+                    .inq-act-btn--edit:hover {
+                        background: var(--sage-soft);
+                        color: var(--evergreen);
+                        border-color: var(--sage);
+                    }
+
+                    .inq-act-btn--delete:hover {
+                        background: #f5e0e0;
+                        color: #b94a48;
+                        border-color: #e8b0b0;
+                    }
+
+                    .inq-act-btn--read:hover {
+                        background: rgba(22, 48, 42, .06);
+                        color: var(--evergreen);
+                        border-color: var(--evergreen);
+                    }
+
+                    .inq-act-btn--unread:hover {
+                        background: rgba(188, 127, 55, .08);
+                        color: var(--honey);
+                        border-color: var(--honey);
+                    }
+
+                    .inq-act-spacer {
+                        flex: 1;
+                    }
+
+                    /* Delete confirm inline */
+                    .inq-delete-confirm {
+                        display: none;
+                        align-items: center;
+                        gap: 8px;
+                        padding: 10px 14px;
+                        background: #fdf2f2;
+                        border: 1px solid #f0c0c0;
+                        border-radius: 12px;
+                        margin-top: 12px;
+                        animation: inqCardIn .3s var(--ease) both;
+                    }
+
+                    .inq-delete-confirm.show {
+                        display: flex;
+                    }
+
+                    .inq-delete-confirm span {
+                        font-size: .84rem;
+                        color: #8b3a3a;
+                        font-weight: 600;
+                        flex: 1;
+                    }
+
+                    .inq-del-confirm-btn {
+                        padding: .45em .9em;
+                        border-radius: 8px;
+                        border: none;
+                        font-family: "Mulish", sans-serif;
+                        font-size: .8rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all .25s;
+                    }
+
+                    .inq-del-confirm-btn--yes {
+                        background: #b94a48;
+                        color: #fff;
+                    }
+
+                    .inq-del-confirm-btn--yes:hover {
+                        background: #a03a38;
+                    }
+
+                    .inq-del-confirm-btn--no {
+                        background: transparent;
+                        color: var(--ink-soft);
+                        border: 1px solid var(--line);
+                    }
+
+                    .inq-del-confirm-btn--no:hover {
+                        background: var(--bone);
+                    }
+
+                    /* Empty state */
+                    .inq-empty {
+                        display: none;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 80px 24px;
+                        text-align: center;
+                    }
+
+                    .inq-empty.show {
+                        display: flex;
+                    }
+
+                    .inq-empty-icon {
+                        width: 80px;
+                        height: 80px;
+                        border-radius: 50%;
+                        background: var(--sage-soft);
+                        display: grid;
+                        place-items: center;
+                        color: var(--sage);
+                        margin-bottom: 18px;
+                    }
+
+                    .inq-empty h3 {
+                        font-size: 1.2rem;
+                        color: var(--evergreen);
+                        margin-bottom: 6px;
+                    }
+
+                    .inq-empty p {
+                        font-size: .9rem;
+                        color: var(--ink-soft);
+                        max-width: 360px;
+                    }
+
+                    /* No results state */
+                    .inq-no-results {
+                        display: none;
+                        flex-direction: column;
+                        align-items: center;
+                        padding: 60px 24px;
+                        text-align: center;
+                    }
+
+                    .inq-no-results.show {
+                        display: flex;
+                    }
+
+                    .inq-no-results svg {
+                        opacity: .3;
+                        margin-bottom: 14px;
+                    }
+
+                    .inq-no-results h3 {
+                        font-size: 1.05rem;
+                        color: var(--evergreen);
+                        margin-bottom: 4px;
+                    }
+
+                    .inq-no-results p {
+                        font-size: .85rem;
+                        color: var(--ink-soft);
+                    }
+
+                    /* Loading state */
+                    .inq-loading {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 80px 24px;
+                        gap: 16px;
+                    }
+
+                    .inq-loading.hidden {
+                        display: none;
+                    }
+
+                    .inq-spinner {
+                        width: 36px;
+                        height: 36px;
+                        border: 3px solid var(--line);
+                        border-top-color: var(--honey);
+                        border-radius: 50%;
+                        animation: spin .7s linear infinite;
+                    }
+
+                    .inq-loading span {
+                        font-size: .88rem;
+                        color: var(--ink-soft);
+                        font-weight: 500;
+                    }
+
+                    /* ===== Edit Modal ===== */
+                    .inq-modal-overlay {
+                        position: fixed;
+                        inset: 0;
+                        z-index: 500;
+                        background: rgba(22, 48, 42, .55);
+                        backdrop-filter: blur(8px);
+                        -webkit-backdrop-filter: blur(8px);
+                        display: flex;
+                        align-items: flex-start;
+                        justify-content: center;
+                        padding: 30px 16px;
+                        overflow-y: auto;
+                        opacity: 0;
+                        visibility: hidden;
+                        transition: opacity .4s var(--ease), visibility .4s;
+                    }
+
+                    .inq-modal-overlay.open {
+                        opacity: 1;
+                        visibility: visible;
+                    }
+
+                    .inq-modal {
+                        background: var(--surface);
+                        border-radius: 24px;
+                        width: 100%;
+                        max-width: 580px;
+                        box-shadow: 0 40px 100px -30px rgba(22, 48, 42, .6);
+                        transform: translateY(24px) scale(.97);
+                        transition: transform .5s var(--ease);
+                        overflow: hidden;
+                        margin-bottom: 40px;
+                    }
+
+                    .inq-modal-overlay.open .inq-modal {
+                        transform: translateY(0) scale(1);
+                    }
+
+                    .inq-modal-header {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 20px 28px;
+                        border-bottom: 1px solid var(--line);
+                        position: sticky;
+                        top: 0;
+                        background: var(--surface);
+                        z-index: 5;
+                    }
+
+                    .inq-modal-header h2 {
+                        font-size: 1.15rem;
+                        color: var(--evergreen);
+                    }
+
+                    .inq-modal-close {
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 50%;
+                        border: none;
+                        background: rgba(22, 48, 42, .08);
+                        color: var(--ink-soft);
+                        cursor: pointer;
+                        display: grid;
+                        place-items: center;
+                        font-size: 1.1rem;
+                        transition: background .3s, transform .3s;
+                    }
+
+                    .inq-modal-close:hover {
+                        background: var(--honey);
+                        color: #fff;
+                        transform: rotate(90deg);
+                    }
+
+                    .inq-modal-body {
+                        padding: 24px 28px 32px;
+                    }
+
+                    .inq-edit-grid {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 16px;
+                    }
+
+                    .inq-edit-grid .inq-edit-full {
+                        grid-column: 1 / -1;
+                    }
+
+                    .inq-edit-field label {
+                        display: block;
+                        font-size: .72rem;
+                        font-weight: 700;
+                        letter-spacing: .07em;
+                        text-transform: uppercase;
+                        color: var(--evergreen);
+                        margin-bottom: 6px;
+                    }
+
+                    .inq-edit-field input,
+                    .inq-edit-field select {
+                        width: 100%;
+                        padding: .68em .9em;
+                        border: 1px solid var(--line);
+                        border-radius: 11px;
+                        background: var(--bone);
+                        font-family: "Mulish", sans-serif;
+                        font-size: .9rem;
+                        color: var(--ink);
+                        transition: border-color .3s, box-shadow .3s;
+                        -webkit-appearance: none;
+                        appearance: none;
+                    }
+
+                    .inq-edit-field select {
+                        background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2354635c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+                        background-repeat: no-repeat;
+                        background-position: right 14px center;
+                        padding-right: 36px;
+                    }
+
+                    .inq-edit-field input:focus,
+                    .inq-edit-field select:focus {
+                        outline: none;
+                        border-color: var(--honey);
+                        box-shadow: 0 0 0 3px rgba(188, 127, 55, .12);
+                    }
+
+                    .inq-modal-footer {
+                        display: flex;
+                        align-items: center;
+                        justify-content: flex-end;
+                        gap: 10px;
+                        padding: 18px 28px;
+                        border-top: 1px solid var(--line);
+                        background: var(--bone);
+                    }
+
+                    .inq-save-btn {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        padding: .65em 1.6em;
+                        border: none;
+                        border-radius: 100px;
+                        background: var(--honey);
+                        color: #fff;
+                        font-family: "Mulish", sans-serif;
+                        font-size: .88rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        box-shadow: 0 10px 24px -10px rgba(188, 127, 55, .7);
+                        transition: transform .3s var(--ease), background .3s, box-shadow .3s;
+                    }
+
+                    .inq-save-btn:hover {
+                        transform: translateY(-2px);
+                        background: #a96f2c;
+                    }
+
+                    .inq-save-btn:disabled {
+                        opacity: .6;
+                        cursor: not-allowed;
+                        transform: none;
+                    }
+
+                    .inq-cancel-btn {
+                        padding: .65em 1.4em;
+                        border: 1px solid var(--line);
+                        border-radius: 100px;
+                        background: transparent;
+                        color: var(--ink-soft);
+                        font-family: "Mulish", sans-serif;
+                        font-size: .88rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all .3s var(--ease);
+                    }
+
+                    .inq-cancel-btn:hover {
+                        border-color: var(--evergreen);
+                        color: var(--evergreen);
+                    }
+
+                    /* ===== Sidebar badge ===== */
+                    .inq-nav-badge {
+                        display: none;
+                        align-items: center;
+                        justify-content: center;
+                        min-width: 20px;
+                        height: 20px;
+                        padding: 0 6px;
+                        border-radius: 100px;
+                        background: var(--honey);
+                        color: #fff;
+                        font-size: .68rem;
+                        font-weight: 700;
+                        margin-left: auto;
+                        line-height: 1;
+                        animation: badgePop .4s var(--ease) both;
+                    }
+
+                    .inq-nav-badge.show {
+                        display: inline-flex;
+                    }
+
+                    @keyframes badgePop {
+                        from {
+                            transform: scale(0);
+                        }
+
+                        to {
+                            transform: scale(1);
+                        }
+                    }
+
+                    /* ===== Toast notification ===== */
+                    .inq-toast {
+                        position: fixed;
+                        bottom: 28px;
+                        right: 28px;
+                        z-index: 600;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 14px 22px;
+                        background: var(--evergreen);
+                        color: #fff;
+                        border-radius: 14px;
+                        font-size: .88rem;
+                        font-weight: 500;
+                        box-shadow: 0 16px 40px -12px rgba(22, 48, 42, .5);
+                        transform: translateY(20px);
+                        opacity: 0;
+                        visibility: hidden;
+                        transition: all .4s var(--ease);
+                    }
+
+                    .inq-toast.show {
+                        transform: translateY(0);
+                        opacity: 1;
+                        visibility: visible;
+                    }
+
+                    .inq-toast--success {
+                        background: #2d6a4f;
+                    }
+
+                    .inq-toast--error {
+                        background: #9b2c2c;
+                    }
+
+                    .inq-toast--info {
+                        background: var(--evergreen);
+                    }
+
+                    /* ===== Responsive ===== */
+                    @media (max-width: 768px) {
+                        .inq-header {
+                            padding: 20px 16px 0;
+                            flex-direction: column;
+                        }
+
+                        .inq-stats {
+                            width: 100%;
+                        }
+
+                        .inq-stat {
+                            flex: 1;
+                            min-width: 0;
+                            padding: 10px 12px;
+                        }
+
+                        .inq-stat-num {
+                            font-size: 1.25rem;
+                        }
+
+                        .inq-filters {
+                            padding: 14px 16px 0;
+                        }
+
+                        .inq-search {
+                            min-width: 100%;
+                        }
+
+                        .inq-list {
+                            padding: 14px 16px 32px;
+                            gap: 12px;
+                        }
+
+                        .inq-card {
+                            padding: 16px;
+                            border-radius: 14px;
+                        }
+
+                        .inq-details {
+                            grid-template-columns: 1fr;
+                            gap: 8px;
+                        }
+
+                        .inq-card-actions {
+                            gap: 6px;
+                        }
+
+                        .inq-act-btn {
+                            padding: .5em .75em;
+                            font-size: .76rem;
+                        }
+
+                        .inq-act-btn .btn-label {
+                            display: none;
+                        }
+
+                        .inq-act-btn svg {
+                            width: 16px;
+                            height: 16px;
+                        }
+
+                        .inq-edit-grid {
+                            grid-template-columns: 1fr;
+                        }
+
+                        .inq-modal-body {
+                            padding: 20px;
+                        }
+
+                        .inq-modal-header {
+                            padding: 16px 20px;
+                        }
+
+                        .inq-modal-footer {
+                            padding: 14px 20px;
+                        }
+
+                        .inq-toast {
+                            left: 16px;
+                            right: 16px;
+                            bottom: 16px;
+                        }
+                    }
+
+                    @media (max-width: 400px) {
+                        .inq-card-top {
+                            flex-direction: column;
+                            gap: 4px;
+                        }
+
+                        .inq-card-time {
+                            margin-top: 0;
+                        }
+
+                        .inq-delete-confirm {
+                            flex-direction: column;
+                            text-align: center;
+                        }
+
+                        .inq-delete-confirm span {
+                            flex: none;
+                        }
+                    }
+                </style>
+
+                <!-- Header -->
+                <div class="inq-header">
+                    <style>
+                        @media(max-width:768px) {
+                            #mobileMenuBtn {
+                                display: grid !important;
+                            }
+                        }
+                    </style>
+                    <button id="mobileMenuBtn"
+                        onclick="document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('active')"
+                        style="display:none;background:none;border:1px solid var(--line);border-radius:10px;padding:8px;cursor:pointer;color:var(--evergreen);width:40px;height:40px;place-items:center">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round">
+                            <line x1="4" y1="6" x2="20" y2="6" />
+                            <line x1="4" y1="12" x2="20" y2="12" />
+                            <line x1="4" y1="18" x2="20" y2="18" />
+                        </svg>
+                    </button>
+                    <script>
+                        document.getElementById('sidebarOverlay').addEventListener('click', function () {
+                            document.getElementById('sidebar').classList.remove('open');
+                            this.classList.remove('active');
+                        });
+                    </script>
+                    <div class="inq-header-left">
+                        <h2>Inquiries</h2>
+                        <p>Appointment booking requests</p>
+
+                    </div>
+                    <div class="inq-stats">
+                        <div class="inq-stat">
+                            <span class="inq-stat-num" id="inqStatTotal">0</span>
+                            <span class="inq-stat-label">Total</span>
+                        </div>
+                        <div class="inq-stat">
+                            <span class="inq-stat-num unread-num" id="inqStatUnread">0</span>
+                            <span class="inq-stat-label">Unread</span>
+                        </div>
+                        <div class="inq-stat">
+                            <span class="inq-stat-num" id="inqStatToday">0</span>
+                            <span class="inq-stat-label">Today</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="inq-filters">
+                    <div class="inq-search">
+                        <input type="text" id="inqSearchInput" placeholder="Search by name, email, phone, service..."
+                            autocomplete="off">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.3-4.3" />
+                        </svg>
+                    </div>
+                    <button class="inq-filter-btn active" data-filter="all">
+                        All
+                    </button>
+                    <button class="inq-filter-btn" data-filter="unread">
+                        Unread <span class="filter-count" id="inqFilterUnreadCount">0</span>
+                    </button>
+                    <button class="inq-filter-btn" data-filter="read">
+                        Read
+                    </button>
+                </div>
+
+                <!-- Loading -->
+                <div class="inq-loading" id="inqLoading">
+                    <div class="inq-spinner"></div>
+                    <span>Loading inquiries...</span>
+                </div>
+
+                <!-- Empty state -->
+                <div class="inq-empty" id="inqEmpty">
+                    <div class="inq-empty-icon">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="20" height="16" x="2" y="4" rx="2" />
+                            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                        </svg>
+                    </div>
+                    <h3>No Inquiries Yet</h3>
+                    <p>Appointment booking requests will appear here as they come in.</p>
+                </div>
+
+                <!-- No results -->
+                <div class="inq-no-results" id="inqNoResults">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.3-4.3" />
+                        <path d="M8 11h6" />
+                    </svg>
+                    <h3>No matching inquiries</h3>
+                    <p>Try adjusting your search or filter criteria.</p>
+                </div>
+
+                <!-- Card list -->
+                <div class="inq-list" id="inqList"></div>
+
+                <!-- Edit Modal -->
+                <div class="inq-modal-overlay" id="inqEditModal">
+                    <div class="inq-modal">
+                        <div class="inq-modal-header">
+                            <h2>Edit Inquiry</h2>
+                            <button class="inq-modal-close" id="inqEditClose" aria-label="Close modal">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M18 6 6 18" />
+                                    <path d="m6 6 12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="inq-modal-body">
+                            <div class="inq-edit-grid">
+                                <div class="inq-edit-field">
+                                    <label for="inqEditName">Full Name</label>
+                                    <input type="text" id="inqEditName">
+                                </div>
+                                <div class="inq-edit-field">
+                                    <label for="inqEditGender">Gender</label>
+                                    <select id="inqEditGender">
+                                        <option value="">Select gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="inq-edit-field">
+                                    <label for="inqEditDob">Date of Birth</label>
+                                    <input type="date" id="inqEditDob">
+                                </div>
+                                <div class="inq-edit-field">
+                                    <label for="inqEditPhone">Phone Number</label>
+                                    <input type="tel" id="inqEditPhone" inputmode="numeric">
+                                </div>
+                                <div class="inq-edit-field inq-edit-full">
+                                    <label for="inqEditEmail">Email Address</label>
+                                    <input type="email" id="inqEditEmail">
+                                </div>
+                                <div class="inq-edit-field">
+                                    <label for="inqEditService">Service</label>
+                                    <select id="inqEditService">
+                                        <option value="">Select a service</option>
+                                        <option value="Individual Counselling">Individual Counselling</option>
+                                        <option value="Couples Therapy">Couples Therapy</option>
+                                        <option value="Family Therapy">Family Therapy</option>
+                                        <option value="Child & Adolescent Therapy">Child & Adolescent Therapy</option>
+                                        <option value="Spiritual Direction">Spiritual Direction</option>
+                                        <option value="Training Program">Training Program</option>
+                                    </select>
+                                </div>
+                                <div class="inq-edit-field">
+                                    <label for="inqEditMode">Preferred Mode</label>
+                                    <select id="inqEditMode">
+                                        <option value="">Select preferred mode</option>
+                                        <option value="Individual-Interaction">Individual Interaction</option>
+                                        <option value="Online-Virtual-Meet">Online Virtual Meet</option>
+                                        <option value="Visit-Centre">Visit Centre</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="inq-modal-footer">
+                            <button class="inq-cancel-btn" id="inqEditCancel">Cancel</button>
+                            <button class="inq-save-btn" id="inqEditSave">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toast -->
+                <div class="inq-toast" id="inqToast"></div>
+
+                <script>
+                    (function () {
+                        /* ── References ── */
+                        const listEl = document.getElementById('inqList');
+                        const loadingEl = document.getElementById('inqLoading');
+                        const emptyEl = document.getElementById('inqEmpty');
+                        const noResultsEl = document.getElementById('inqNoResults');
+                        const searchInput = document.getElementById('inqSearchInput');
+                        const filterBtns = document.querySelectorAll('.inq-filter-btn');
+                        const statTotal = document.getElementById('inqStatTotal');
+                        const statUnread = document.getElementById('inqStatUnread');
+                        const statToday = document.getElementById('inqStatToday');
+                        const filterUnreadCount = document.getElementById('inqFilterUnreadCount');
+                        const editModal = document.getElementById('inqEditModal');
+                        const editClose = document.getElementById('inqEditClose');
+                        const editCancel = document.getElementById('inqEditCancel');
+                        const editSave = document.getElementById('inqEditSave');
+                        const toastEl = document.getElementById('inqToast');
+
+                        /* Edit form fields */
+                        const editFields = {
+                            name: document.getElementById('inqEditName'),
+                            gender: document.getElementById('inqEditGender'),
+                            dob: document.getElementById('inqEditDob'),
+                            phone: document.getElementById('inqEditPhone'),
+                            email: document.getElementById('inqEditEmail'),
+                            service: document.getElementById('inqEditService'),
+                            mode: document.getElementById('inqEditMode')
+                        };
+
+                        /* ── State ── */
+                        let allInquiries = [];
+                        let currentFilter = 'all';
+                        let currentSearch = '';
+                        let editingDocId = null;
+                        let unsubscribe = null;
+                        let toastTimeout = null;
+                        let listenerActive = false;
+
+                        /* ── Sidebar badge ── */
+                        const inquiryNavBtn = document.querySelector('.nav-item[data-tab="inquiry"]');
+                        let navBadge = null;
+
+                        function ensureNavBadge() {
+                            if (!inquiryNavBtn) return;
+                            if (!navBadge) {
+                                navBadge = document.createElement('span');
+                                navBadge.className = 'inq-nav-badge';
+                                inquiryNavBtn.appendChild(navBadge);
+                            }
+                        }
+
+                        function updateNavBadge(count) {
+                            ensureNavBadge();
+                            if (!navBadge) return;
+                            if (count > 0) {
+                                navBadge.textContent = count > 99 ? '99+' : count;
+                                navBadge.classList.add('show');
+                            } else {
+                                navBadge.classList.remove('show');
+                            }
+                        }
+
+                        /* ── Utilities ── */
+                        function calcAge(dob) {
+                            if (!dob) return '—';
+                            const today = new Date();
+                            const birth = new Date(dob);
+                            if (isNaN(birth.getTime())) return '—';
+                            let age = today.getFullYear() - birth.getFullYear();
+                            const m = today.getMonth() - birth.getMonth();
+                            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+                            return age >= 0 ? age + ' yrs' : '—';
+                        }
+
+                        function formatDate(dateStr) {
+                            if (!dateStr) return '—';
+                            const d = new Date(dateStr);
+                            if (isNaN(d.getTime())) return '—';
+                            return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                        }
+
+                        function formatTimestamp(ts) {
+                            if (!ts) return '—';
+                            const d = ts.toDate ? ts.toDate() : new Date(ts);
+                            if (isNaN(d.getTime())) return '—';
+                            return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) +
+                                ' at ' +
+                                d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                        }
+
+                        function relativeTime(ts) {
+                            if (!ts) return '';
+                            const d = ts.toDate ? ts.toDate() : new Date(ts);
+                            if (isNaN(d.getTime())) return '';
+                            const now = new Date();
+                            const diffMs = now - d;
+                            const diffSec = Math.floor(diffMs / 1000);
+                            const diffMin = Math.floor(diffSec / 60);
+                            const diffHr = Math.floor(diffMin / 60);
+                            const diffDay = Math.floor(diffHr / 24);
+
+                            if (diffSec < 60) return 'Just now';
+                            if (diffMin < 60) return diffMin + ' min ago';
+                            if (diffHr < 24) return diffHr + ' hr ago';
+                            if (diffDay === 1) return 'Yesterday';
+                            if (diffDay < 7) return diffDay + ' days ago';
+                            return formatDate(d);
+                        }
+
+                        function isToday(ts) {
+                            if (!ts) return false;
+                            const d = ts.toDate ? ts.toDate() : new Date(ts);
+                            const now = new Date();
+                            return d.getDate() === now.getDate() &&
+                                d.getMonth() === now.getMonth() &&
+                                d.getFullYear() === now.getFullYear();
+                        }
+
+                        function modeLabel(mode) {
+                            const map = {
+                                'Individual-Interaction': 'Individual Interaction',
+                                'Online-Virtual-Meet': 'Online Virtual Meet',
+                                'Visit-Centre': 'Visit Centre'
+                            };
+                            return map[mode] || mode || '—';
+                        }
+
+                        function escapeHtml(str) {
+                            if (!str) return '';
+                            const div = document.createElement('div');
+                            div.textContent = str;
+                            return div.innerHTML;
+                        }
+
+                        /* ── Toast ── */
+                        function showToast(message, type) {
+                            type = type || 'info';
+                            if (toastTimeout) clearTimeout(toastTimeout);
+                            toastEl.className = 'inq-toast inq-toast--' + type;
+                            toastEl.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' + escapeHtml(message);
+                            requestAnimationFrame(function () {
+                                toastEl.classList.add('show');
+                            });
+                            toastTimeout = setTimeout(function () {
+                                toastEl.classList.remove('show');
+                            }, 3000);
+                        }
+
+                        /* ── Stats ── */
+                        function updateStats() {
+                            const total = allInquiries.length;
+                            const unread = allInquiries.filter(function (i) { return !i.read; }).length;
+                            const today = allInquiries.filter(function (i) { return isToday(i.submittedAt); }).length;
+
+                            statTotal.textContent = total;
+                            statUnread.textContent = unread;
+                            statToday.textContent = today;
+                            filterUnreadCount.textContent = unread;
+                            updateNavBadge(unread);
+                        }
+
+                        /* ── Render ── */
+                        function getFilteredInquiries() {
+                            let list = allInquiries;
+
+                            /* Filter */
+                            if (currentFilter === 'unread') {
+                                list = list.filter(function (i) { return !i.read; });
+                            } else if (currentFilter === 'read') {
+                                list = list.filter(function (i) { return i.read; });
+                            }
+
+                            /* Search */
+                            if (currentSearch.trim()) {
+                                const q = currentSearch.toLowerCase().trim();
+                                list = list.filter(function (i) {
+                                    return (i.name && i.name.toLowerCase().indexOf(q) !== -1) ||
+                                        (i.emailAddress && i.emailAddress.toLowerCase().indexOf(q) !== -1) ||
+                                        (i.phoneNumber && i.phoneNumber.indexOf(q) !== -1) ||
+                                        (i.service && i.service.toLowerCase().indexOf(q) !== -1) ||
+                                        (i.gender && i.gender.toLowerCase().indexOf(q) !== -1) ||
+                                        (modeLabel(i.preferredMode).toLowerCase().indexOf(q) !== -1);
+                                });
+                            }
+
+                            return list;
+                        }
+
+                        function renderList() {
+                            const filtered = getFilteredInquiries();
+                            updateStats();
+
+                            /* Show/hide states */
+                            if (allInquiries.length === 0) {
+                                loadingEl.classList.add('hidden');
+                                emptyEl.classList.add('show');
+                                noResultsEl.classList.remove('show');
+                                listEl.innerHTML = '';
+                                return;
+                            }
+
+                            emptyEl.classList.remove('show');
+
+                            if (filtered.length === 0) {
+                                loadingEl.classList.add('hidden');
+                                noResultsEl.classList.add('show');
+                                listEl.innerHTML = '';
+                                return;
+                            }
+
+                            noResultsEl.classList.remove('show');
+                            loadingEl.classList.add('hidden');
+
+                            let html = '';
+                            filtered.forEach(function (inq, idx) {
+                                const unreadClass = inq.read ? '' : ' unread';
+                                const dotHtml = inq.read ? '' : '<div class="inq-unread-dot"></div>';
+                                const age = calcAge(inq.dateOfBirth);
+                                const phone = inq.phoneNumber || '—';
+                                const email = inq.emailAddress || '—';
+                                const service = inq.service || '—';
+                                const mode = modeLabel(inq.preferredMode);
+                                const time = relativeTime(inq.submittedAt);
+                                const fullTime = formatTimestamp(inq.submittedAt);
+                                const dobFormatted = formatDate(inq.dateOfBirth);
+
+                                html += '<div class="inq-card' + unreadClass + '" data-id="' + inq.id + '" style="animation-delay:' + (idx * 0.04) + 's">'
+                                    + dotHtml
+                                    + '<div class="inq-card-top">'
+                                    + '<div class="inq-card-name">' + escapeHtml(inq.name || 'Unknown') + '</div>'
+                                    + '<div class="inq-card-time" title="' + escapeHtml(fullTime) + '">' + escapeHtml(time) + '</div>'
+                                    + '</div>'
+                                    + '<div class="inq-details">'
+                                    + '<div class="inq-detail">'
+                                    + '<span class="inq-detail-label">Gender</span>'
+                                    + '<span class="inq-detail-value">' + escapeHtml(inq.gender || '—') + '</span>'
+                                    + '</div>'
+                                    + '<div class="inq-detail">'
+                                    + '<span class="inq-detail-label">Age</span>'
+                                    + '<span class="inq-detail-value">' + age + '</span>'
+                                    + '</div>'
+                                    + '<div class="inq-detail">'
+                                    + '<span class="inq-detail-label">Date of Birth</span>'
+                                    + '<span class="inq-detail-value">' + dobFormatted + '</span>'
+                                    + '</div>'
+                                    + '<div class="inq-detail">'
+                                    + '<span class="inq-detail-label">Phone</span>'
+                                    + '<span class="inq-detail-value"><a href="tel:' + escapeHtml(phone) + '">' + escapeHtml(phone) + '</a></span>'
+                                    + '</div>'
+                                    + '<div class="inq-detail">'
+                                    + '<span class="inq-detail-label">Email</span>'
+                                    + '<span class="inq-detail-value"><a href="mailto:' + escapeHtml(email) + '">' + escapeHtml(email) + '</a></span>'
+                                    + '</div>'
+                                    + '<div class="inq-detail">'
+                                    + '<span class="inq-detail-label">Service</span>'
+                                    + '<span class="inq-detail-value"><span class="inq-service-tag">' + escapeHtml(service) + '</span></span>'
+                                    + '</div>'
+                                    + '<div class="inq-detail">'
+                                    + '<span class="inq-detail-label">Preferred Mode</span>'
+                                    + '<span class="inq-detail-value"><span class="inq-mode-tag">' + escapeHtml(mode) + '</span></span>'
+                                    + '</div>'
+                                    + '<div class="inq-detail">'
+                                    + '<span class="inq-detail-label">Submitted</span>'
+                                    + '<span class="inq-detail-value">' + escapeHtml(fullTime) + '</span>'
+                                    + '</div>'
+                                    + '</div>'
+                                    + '<div class="inq-card-actions">'
+                                    + '<a href="tel:' + escapeHtml(phone) + '" class="inq-act-btn inq-act-btn--call" title="Call">'
+                                    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>'
+                                    + '<span class="btn-label">Call</span>'
+                                    + '</a>'
+                                    + '<a href="mailto:' + escapeHtml(email) + '" class="inq-act-btn inq-act-btn--mail" title="Email">'
+                                    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>'
+                                    + '<span class="btn-label">Email</span>'
+                                    + '</a>'
+                                    + '<button class="inq-act-btn inq-act-btn--edit" data-action="edit" data-id="' + inq.id + '" title="Edit">'
+                                    + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>'
+                                    + '<span class="btn-label">Edit</span>'
+                                    + '</button>'
+                                    + '<button class="inq-act-btn inq-act-btn--delete" data-action="delete" data-id="' + inq.id + '" title="Delete">'
+                                    + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>'
+                                    + '<span class="btn-label">Delete</span>'
+                                    + '</button>'
+                                    + '<span class="inq-act-spacer"></span>';
+
+                                if (inq.read) {
+                                    html += '<button class="inq-act-btn inq-act-btn--unread" data-action="mark-unread" data-id="' + inq.id + '" title="Mark as unread">'
+                                        + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>'
+                                        + '<span class="btn-label">Mark Unread</span>'
+                                        + '</button>';
+                                } else {
+                                    html += '<button class="inq-act-btn inq-act-btn--read" data-action="mark-read" data-id="' + inq.id + '" title="Mark as read">'
+                                        + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>'
+                                        + '<span class="btn-label">Mark Read</span>'
+                                        + '</button>';
+                                }
+
+                                html += '</div>'
+                                    + '<div class="inq-delete-confirm" id="delConfirm-' + inq.id + '">'
+                                    + '<span>Delete this inquiry permanently?</span>'
+                                    + '<button class="inq-del-confirm-btn inq-del-confirm-btn--yes" data-action="confirm-delete" data-id="' + inq.id + '">Delete</button>'
+                                    + '<button class="inq-del-confirm-btn inq-del-confirm-btn--no" data-action="cancel-delete" data-id="' + inq.id + '">Cancel</button>'
+                                    + '</div>'
+                                    + '</div>';
+                            });
+
+                            listEl.innerHTML = html;
+                        }
+
+                        /* ── Firestore Listener ── */
+                        function startListener() {
+                            if (listenerActive) return;
+                            listenerActive = true;
+
+                            unsubscribe = db.collection('appointment')
+                                .orderBy('submittedAt', 'desc')
+                                .onSnapshot(function (snapshot) {
+                                    allInquiries = [];
+                                    snapshot.forEach(function (doc) {
+                                        var data = doc.data();
+                                        allInquiries.push({
+                                            id: doc.id,
+                                            name: data.name || '',
+                                            gender: data.gender || '',
+                                            dateOfBirth: data.dateOfBirth || '',
+                                            phoneNumber: data.phoneNumber || '',
+                                            emailAddress: data.emailAddress || '',
+                                            service: data.service || '',
+                                            preferredMode: data.preferredMode || '',
+                                            submittedAt: data.submittedAt || null,
+                                            read: data.read || false
+                                        });
+                                    });
+                                    renderList();
+                                }, function (err) {
+                                    console.error('Firestore listener error:', err);
+                                    loadingEl.classList.add('hidden');
+                                    showToast('Failed to load inquiries', 'error');
+                                });
+                        }
+
+                        function stopListener() {
+                            if (unsubscribe) {
+                                unsubscribe();
+                                unsubscribe = null;
+                            }
+                            listenerActive = false;
+                        }
+
+                        /* ── Mark as Read ── */
+                        function markAsRead(docId) {
+                            db.collection('appointment').doc(docId).update({ read: true }).then(function () {
+                                showToast('Marked as read', 'success');
+                            }).catch(function (err) {
+                                console.error(err);
+                                showToast('Failed to update', 'error');
+                            });
+                        }
+
+                        /* ── Mark as Unread ── */
+                        function markAsUnread(docId) {
+                            db.collection('appointment').doc(docId).update({ read: false }).then(function () {
+                                showToast('Marked as unread', 'info');
+                            }).catch(function (err) {
+                                console.error(err);
+                                showToast('Failed to update', 'error');
+                            });
+                        }
+
+                        /* ── Delete ── */
+                        function deleteInquiry(docId) {
+                            db.collection('appointment').doc(docId).delete().then(function () {
+                                showToast('Inquiry deleted', 'success');
+                            }).catch(function (err) {
+                                console.error(err);
+                                showToast('Failed to delete', 'error');
+                            });
+                        }
+
+                        /* ── Edit Modal ── */
+                        function openEditModal(docId) {
+                            var inq = allInquiries.find(function (i) { return i.id === docId; });
+                            if (!inq) return;
+
+                            editingDocId = docId;
+                            editFields.name.value = inq.name || '';
+                            editFields.gender.value = inq.gender || '';
+                            editFields.dob.value = inq.dateOfBirth || '';
+                            editFields.phone.value = inq.phoneNumber || '';
+                            editFields.email.value = inq.emailAddress || '';
+                            editFields.service.value = inq.service || '';
+                            editFields.mode.value = inq.preferredMode || '';
+
+                            editModal.classList.add('open');
+                            document.body.style.overflow = 'hidden';
+                            editFields.name.focus();
+                        }
+
+                        function closeEditModal() {
+                            editModal.classList.remove('open');
+                            document.body.style.overflow = '';
+                            editingDocId = null;
+                        }
+
+                        function saveEdit() {
+                            if (!editingDocId) return;
+
+                            /* Basic validation */
+                            var name = editFields.name.value.trim();
+                            if (!name) {
+                                editFields.name.focus();
+                                editFields.name.style.borderColor = '#b94a48';
+                                setTimeout(function () { editFields.name.style.borderColor = ''; }, 2000);
+                                return;
+                            }
+
+                            editSave.disabled = true;
+                            editSave.innerHTML = '<span class="inq-spinner" style="width:16px;height:16px;border-width:2px;display:inline-block;vertical-align:middle;"></span> Saving...';
+
+                            db.collection('appointment').doc(editingDocId).update({
+                                name: name,
+                                gender: editFields.gender.value,
+                                dateOfBirth: editFields.dob.value,
+                                phoneNumber: editFields.phone.value.replace(/\D/g, ''),
+                                emailAddress: editFields.email.value.trim(),
+                                service: editFields.service.value,
+                                preferredMode: editFields.mode.value
+                            }).then(function () {
+                                closeEditModal();
+                                showToast('Inquiry updated successfully', 'success');
+                            }).catch(function (err) {
+                                console.error(err);
+                                showToast('Failed to save changes', 'error');
+                            }).finally(function () {
+                                editSave.disabled = false;
+                                editSave.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Save Changes';
+                            });
+                        }
+
+                        /* ── Event Delegation for Card Actions ── */
+                        listEl.addEventListener('click', function (e) {
+                            var btn = e.target.closest('[data-action]');
+                            if (!btn) return;
+
+                            var action = btn.dataset.action;
+                            var id = btn.dataset.id;
+
+                            switch (action) {
+                                case 'mark-read':
+                                    markAsRead(id);
+                                    break;
+                                case 'mark-unread':
+                                    markAsUnread(id);
+                                    break;
+                                case 'edit':
+                                    openEditModal(id);
+                                    break;
+                                case 'delete':
+                                    /* Show inline confirmation */
+                                    var confirmEl = document.getElementById('delConfirm-' + id);
+                                    if (confirmEl) confirmEl.classList.add('show');
+                                    break;
+                                case 'confirm-delete':
+                                    deleteInquiry(id);
+                                    break;
+                                case 'cancel-delete':
+                                    var confirmEl2 = document.getElementById('delConfirm-' + id);
+                                    if (confirmEl2) confirmEl2.classList.remove('show');
+                                    break;
+                            }
+                        });
+
+                        /* ── Filter Buttons ── */
+                        filterBtns.forEach(function (btn) {
+                            btn.addEventListener('click', function () {
+                                filterBtns.forEach(function (b) { b.classList.remove('active'); });
+                                btn.classList.add('active');
+                                currentFilter = btn.dataset.filter;
+                                renderList();
+                            });
+                        });
+
+                        /* ── Search ── */
+                        var searchDebounce = null;
+                        searchInput.addEventListener('input', function () {
+                            clearTimeout(searchDebounce);
+                            searchDebounce = setTimeout(function () {
+                                currentSearch = searchInput.value;
+                                renderList();
+                            }, 250);
+                        });
+
+                        /* ── Edit Modal Events ── */
+                        editClose.addEventListener('click', closeEditModal);
+                        editCancel.addEventListener('click', closeEditModal);
+                        editSave.addEventListener('click', saveEdit);
+
+                        editModal.addEventListener('click', function (e) {
+                            if (e.target === editModal) closeEditModal();
+                        });
+
+                        /* Keyboard: Escape to close modal */
+                        document.addEventListener('keydown', function (e) {
+                            if (e.key === 'Escape' && editModal.classList.contains('open')) {
+                                closeEditModal();
+                            }
+                        });
+
+                        /* Phone field: digits only */
+                        editFields.phone.addEventListener('input', function () {
+                            this.value = this.value.replace(/\D/g, '');
+                        });
+
+                        /* ── Tab Visibility: Start/Stop Listener ── */
+                        function activateInquiryTab() {
+                            startListener();
+                        }
+
+                        function deactivateInquiryTab() {
+                            stopListener();
+                        }
+
+                        /* Watch for tab changes using MutationObserver on the tab panels */
+                        var tabObserver = new MutationObserver(function () {
+                            var inquiryPanel = document.getElementById('tab-inquiry');
+                            if (inquiryPanel && inquiryPanel.classList.contains('active')) {
+                                activateInquiryTab();
+                            } else {
+                                deactivateInquiryTab();
+                            }
+                        });
+
+                        var contentArea = document.getElementById('contentArea');
+                        if (contentArea) {
+                            tabObserver.observe(contentArea, {
+                                attributes: true,
+                                subtree: true,
+                                attributeFilter: ['class']
+                            });
+                        }
+
+                        /* Also handle initial sidebar nav clicks if they aren't handled elsewhere */
+                        document.querySelectorAll('.nav-item[data-tab]').forEach(function (navBtn) {
+                            navBtn.addEventListener('click', function () {
+                                var tabId = navBtn.dataset.tab;
+
+                                /* Update active nav */
+                                document.querySelectorAll('.nav-item[data-tab]').forEach(function (n) {
+                                    n.classList.remove('active');
+                                });
+                                navBtn.classList.add('active');
+
+                                /* Switch tab panels */
+                                document.querySelectorAll('.tab-panel').forEach(function (panel) {
+                                    panel.classList.remove('active');
+                                });
+                                var targetPanel = document.getElementById('tab-' + tabId);
+                                if (targetPanel) {
+                                    targetPanel.classList.add('active');
+                                }
+
+                                /* Update topbar title if exists */
+                                var pageTitle = document.getElementById('pageTitle');
+                                if (pageTitle) {
+                                    var titles = { blogs: 'Blog Management', inquiry: 'Inquiries', subscribers: 'Subscribers' };
+                                    pageTitle.textContent = titles[tabId] || tabId;
+                                }
+
+                                /* Close mobile sidebar */
+                                var sidebar = document.getElementById('sidebar');
+                                var overlay = document.getElementById('sidebarOverlay');
+                                var menuBtn = document.getElementById('menuToggle');
+                                if (sidebar) sidebar.classList.remove('open');
+                                if (overlay) overlay.classList.remove('active');
+                                if (menuBtn) menuBtn.classList.remove('active');
+                            });
+                        });
+
+                        /* ── Mobile Menu Toggle (ensure it works) ── */
+                        var menuToggle = document.getElementById('menuToggle');
+                        var sidebar = document.getElementById('sidebar');
+                        var sidebarOverlay = document.getElementById('sidebarOverlay');
+
+                        if (menuToggle && sidebar && sidebarOverlay) {
+                            menuToggle.addEventListener('click', function () {
+                                var isOpen = sidebar.classList.contains('open');
+                                sidebar.classList.toggle('open', !isOpen);
+                                sidebarOverlay.classList.toggle('active', !isOpen);
+                                menuToggle.classList.toggle('active', !isOpen);
+                            });
+
+                            sidebarOverlay.addEventListener('click', function () {
+                                sidebar.classList.remove('open');
+                                sidebarOverlay.classList.remove('active');
+                                menuToggle.classList.remove('active');
+                            });
+                        }
+
+                        /* ── Auto-activate if inquiry tab is visible on load ── */
+                        if (document.getElementById('tab-inquiry').classList.contains('active')) {
+                            activateInquiryTab();
+                        }
+
+                    })();
+                </script>
             </div>
         </div>
+    </div>
     </div>
 
     <script>
