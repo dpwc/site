@@ -293,6 +293,37 @@
             letter-spacing: -.01em;
         }
 
+
+        .brand .mark {
+            width: 28px;
+            height: 32px;
+            flex: none;
+            transition: transform 0.3s var(--ease);
+        }
+
+        .brand:hover .mark {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .brand .name {
+            font-family: "Fraunces";
+            font-size: 1.05rem;
+            line-height: 1;
+            color: var(--evergreen);
+            letter-spacing: -.01em;
+        }
+
+        .brand .name small {
+            display: block;
+            font-family: "Mulish";
+            font-weight: 600;
+            font-size: .56rem;
+            letter-spacing: .32em;
+            text-transform: uppercase;
+            color: var(--sage);
+            margin-top: .3em;
+        }
+
         .nav-links {
             display: flex;
             align-items: center;
@@ -340,6 +371,8 @@
             padding: 8px;
             color: var(--evergreen);
         }
+
+
 
         /* ---------- blog hero ---------- */
         .blog-hero {
@@ -1446,13 +1479,14 @@
                     <a href="/">Home</a>
                     <a href="/services/">Services</a>
                     <a href="/training/">Training</a>
-                    <a href="/blog" class="active">Blog</a>
+                    <a href="/blog/" class="active" style="color: #fff;
+                      background: var(--honey);
+                      box-shadow: 0 4px 15px -5px rgba(188, 127, 55, .6);">Blog</a>
                     <a href="/contact/">Contact</a>
 
                 </div>
                 <div class="nav-cta">
-                    <a href="/contact/#book-session" class="btn btn--primary">Schedule <span
-                            class="arrow">&rarr;</span></a>
+
                     <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
                         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round">
