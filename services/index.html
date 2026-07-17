@@ -205,6 +205,7 @@
         }
 
         /* ---------- nav ---------- */
+        /* ---------- nav ---------- */
         header {
             position: fixed;
             top: 20px;
@@ -264,6 +265,37 @@
             letter-spacing: -.01em;
         }
 
+
+        .brand .mark {
+            width: 28px;
+            height: 32px;
+            flex: none;
+            transition: transform 0.3s var(--ease);
+        }
+
+        .brand:hover .mark {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .brand .name {
+            font-family: "Fraunces";
+            font-size: 1.05rem;
+            line-height: 1;
+            color: var(--evergreen);
+            letter-spacing: -.01em;
+        }
+
+        .brand .name small {
+            display: block;
+            font-family: "Mulish";
+            font-weight: 600;
+            font-size: .56rem;
+            letter-spacing: .32em;
+            text-transform: uppercase;
+            color: var(--sage);
+            margin-top: .3em;
+        }
+
         .nav-links {
             display: flex;
             align-items: center;
@@ -274,6 +306,7 @@
             font-size: .88rem;
             font-weight: 500;
             color: var(--ink-soft);
+            position: relative;
             transition: color .3s, background .3s, padding .3s, border-radius .3s;
             padding: .5em 1em;
             border-radius: 100px;
@@ -309,13 +342,6 @@
             cursor: pointer;
             padding: 8px;
             color: var(--evergreen);
-        }
-
-        .mobile-cta {
-            display: none;
-            margin-top: .5rem;
-            justify-content: center;
-            width: 100%;
         }
 
         /* ---------- hero ---------- */
@@ -1012,15 +1038,16 @@
                 </a>
                 <div class="nav-links" id="navLinks">
                     <a href="/">Home</a>
-                    <a href="/services/" class="active">Services</a>
+                    <a href="/services/" class="active" style="color: #fff;
+              background: var(--honey);
+              box-shadow: 0 4px 15px -5px rgba(188, 127, 55, .6);">Services</a>
                     <a href="/training/">Training</a>
                     <a href="/blog/">Blog</a>
                     <a href="/contact/">Contact</a>
-                    <a href="/contact/#book-session" class="btn btn--primary mobile-cta">Schedule <span
-                            class="arrow">→</span></a>
+
                 </div>
                 <div class="nav-cta">
-                    <a href="/contact/#book-session" class="btn btn--primary">Schedule <span class="arrow">→</span></a>
+
                     <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
                         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round">
@@ -1366,7 +1393,8 @@
                 </div>
                 <span class="eyebrow light" style="justify-content: center;">Also Explore</span>
                 <h3>Training Programmes</h3>
-                <p>Mindfulness & Positive Psychology training for corporate teams, educators, and higher education designed for real-world, lasting transformation.</p>
+                <p>Mindfulness & Positive Psychology training for corporate teams, educators, and higher education
+                    designed for real-world, lasting transformation.</p>
                 <a href="/training/" class="btn btn--light">View More <span class="arrow">→</span></a>
             </div>
         </div>
