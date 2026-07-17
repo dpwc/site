@@ -5367,6 +5367,1162 @@
     </div>
     </div>
 
+
+
+    <script>
+        (function () {
+            'use strict';
+
+            /* ===== State ===== */
+            var iepCurrentId = null;
+            var iepSelectedStatus = 'New';
+            var iepSelectedPriority = 'Low';
+            var iepIsSaving = false;
+            var iepOriginalData = null;
+            var iepFoundCollection = null; /* remembers which collection worked */
+
+            /* ===== Response templates ===== */
+            var iepTemplates = {
+                acknowledge: 'Thank you for reaching out to De Paul Wellness Centre. We have received your inquiry and our team will review it shortly. We typically respond within 24\u201348 hours.',
+                schedule: 'Thank you for your interest. We would love to discuss this further with you. Could you please let us know your preferred date and time for a brief call? We are available Monday to Saturday, 9 AM to 6 PM IST.',
+                followup: 'Hello, we wanted to follow up on your recent inquiry. Have you had a chance to review our previous response? Please feel free to reach out if you have any further questions or need additional information.',
+                resolved: 'We are glad we could assist you with your inquiry. If you have any future questions or need further support, please do not hesitate to contact us again. Wishing you good health and wellness.'
+            };
+
+            /* ===== ALL possible collection names to try ===== */
+            var iepCollectionNames = [
+                'inquiries', 'inquiry', 'contacts', 'contact',
+                'messages', 'submissions', 'formSubmissions',
+                'form-submissions', 'leads', 'queries', 'enquiries'
+            ];
+
+            /* ===== DOM references ===== */
+            var iepOverlay = document.getElementById('iepOverlay');
+            var iepCloseBtn = document.getElementById('iepCloseBtn');
+            var iepLoading = document.getElementById('iepLoading');
+            var iepErrorState = document.getElementById('iepErrorState');
+            var iepErrorMsg = document.getElementById('iepErrorMsg');
+            var iepErrorClose = document.getElementById('iepErrorCloseBtn');
+            var iepFormWrap = document.getElementById('iepFormWrap');
+            var iepForm = document.getElementById('iepForm');
+            var iepToast = document.getElementById('iepToast');
+            var iepHeaderSub = document.getElementById('iepHeaderSub');
+            var iepReceivedDate = document.getElementById('iepReceivedDate');
+            var iepNameInput = document.getElementById('iepName');
+            var iepEmailInput = document.getElementById('iepEmail');
+            var iepPhoneInput = document.getElementById('iepPhone');
+            var iepServiceSel = document.getElementById('iepService');
+            var iepSubjectInput = document.getElementById('iepSubject');
+            var iepMessageInput = document.getElementById('iepMessage');
+            var iepStatusOpts = document.getElementById('iepStatusOpts');
+            var iepPriorityOpts = document.getElementById('iepPriorityOpts');
+            var iepResponseArea = document.getElementById('iepResponse');
+            var iepTimeline = document.getElementById('iepTimeline');
+            var iepDiscardBtn = document.getElementById('iepDiscardBtn');
+            var iepSaveBtn = document.getElementById('iepSaveBtn');
+
+            /* ===== Utility: toast ===== */
+            var iepToastTimer = null;
+            function iepShowToast(msg, type) {
+                iepToast.textContent = msg;
+                iepToast.className = 'iep-toast iep-toast--' + (type || 'success') + ' iep-toast--visible';
+                clearTimeout(iepToastTimer);
+                iepToastTimer = setTimeout(function () {
+                    iepToast.classList.remove('iep-toast--visible');
+                }, 3200);
+            }
+
+            /* ===== Utility: format timestamp ===== */
+            function iepFormatDate(ts) {
+                if (!ts) return '\u2014';
+                var d;
+                if (ts && typeof ts.toDate === 'function') { d = ts.toDate(); }
+                else if (ts instanceof Date) { d = ts; }
+                else if (typeof ts === 'number') { d = new Date(ts); }
+                else if (typeof ts === 'string') { d = new Date(ts); }
+                else { return '\u2014'; }
+                if (isNaN(d.getTime())) return '\u2014';
+                return d.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
+            }
+
+            /* ===== Switch visible state ===== */
+            function iepShowState(which) {
+                iepLoading.style.display = which === 'loading' ? 'flex' : 'none';
+                iepErrorState.style.display = which === 'error' ? 'flex' : 'none';
+                iepFormWrap.style.display = which === 'form' ? 'block' : 'none';
+            }
+
+            /* ===== Set status ===== */
+            function iepSetStatus(status) {
+                iepSelectedStatus = status;
+                var btns = iepStatusOpts.querySelectorAll('.iep-status-btn');
+                for (var i = 0; i < btns.length; i++) {
+                    btns[i].classList.toggle('iep-status-btn--active', btns[i].getAttribute('data-status') === status);
+                }
+            }
+
+            /* ===== Set priority ===== */
+            function iepSetPriority(priority) {
+                iepSelectedPriority = priority;
+                var btns = iepPriorityOpts.querySelectorAll('.iep-priority-btn');
+                for (var i = 0; i < btns.length; i++) {
+                    btns[i].classList.toggle('iep-priority-btn--active', btns[i].getAttribute('data-priority') === priority);
+                }
+            }
+
+            /* ===== Build timeline ===== */
+            function iepBuildTimeline(d) {
+                iepTimeline.innerHTML = '';
+                var entries = [];
+                if (d.createdAt) entries.push({ type: 'created', label: 'Inquiry submitted', time: d.createdAt });
+                else if (d.submittedAt) entries.push({ type: 'created', label: 'Inquiry submitted', time: d.submittedAt });
+                else if (d.timestamp) entries.push({ type: 'created', label: 'Inquiry submitted', time: d.timestamp });
+
+                if (d.updatedAt && entries.length) {
+                    var cMs = (typeof entries[0].time.toDate === 'function') ? entries[0].time.toDate().getTime() : new Date(entries[0].time).getTime();
+                    var uMs = (typeof d.updatedAt.toDate === 'function') ? d.updatedAt.toDate().getTime() : new Date(d.updatedAt).getTime();
+                    if (Math.abs(uMs - cMs) > 1000) entries.push({ type: 'updated', label: 'Last updated', time: d.updatedAt });
+                }
+                if (d.repliedAt) entries.push({ type: 'replied', label: 'Response sent', time: d.repliedAt });
+
+                if (!entries.length) {
+                    iepTimeline.innerHTML = '<p class="iep-timeline-empty">No activity recorded yet.</p>';
+                    return;
+                }
+                for (var i = 0; i < entries.length; i++) {
+                    var e = entries[i];
+                    var item = document.createElement('div');
+                    item.className = 'iep-timeline-item';
+                    var dot = document.createElement('div');
+                    dot.className = 'iep-timeline-dot iep-timeline-dot--' + e.type;
+                    dot.textContent = e.type === 'created' ? 'C' : e.type === 'updated' ? 'U' : 'R';
+                    var content = document.createElement('div');
+                    content.className = 'iep-timeline-content';
+                    content.innerHTML = '<div class="label">' + e.label + '</div><div class="time">' + iepFormatDate(e.time) + '</div>';
+                    item.appendChild(dot);
+                    item.appendChild(content);
+                    iepTimeline.appendChild(item);
+                }
+            }
+
+            /* ===== TRY ALL COLLECTIONS to find the doc ===== */
+            function iepFindDoc(docId) {
+                /* If we already know which collection worked, use it */
+                if (iepFoundCollection) {
+                    console.log('[IEP] Using cached collection:', iepFoundCollection);
+                    return db.collection(iepFoundCollection).doc(docId).get();
+                }
+
+                /* Try each collection one by one */
+                var chain = Promise.reject(new Error('no_collections'));
+
+                for (var i = 0; i < iepCollectionNames.length; i++) {
+                    (function (colName) {
+                        chain = chain.catch(function () {
+                            console.log('[IEP] Trying collection:', colName, 'for doc:', docId);
+                            return db.collection(colName).doc(docId).get().then(function (doc) {
+                                if (doc.exists) {
+                                    console.log('[IEP] FOUND in collection:', colName);
+                                    iepFoundCollection = colName; /* remember for next time */
+                                    return doc;
+                                }
+                                throw new Error('not_in_' + colName);
+                            });
+                        });
+                    })(iepCollectionNames[i]);
+                }
+
+                return chain;
+            }
+
+            /* ===== Open panel ===== */
+            function iepOpenPanel(inquiryId) {
+                iepCurrentId = inquiryId;
+                iepOverlay.setAttribute('aria-hidden', 'false');
+                iepOverlay.classList.add('iep-overlay--open');
+                document.body.style.overflow = 'hidden';
+                iepShowState('loading');
+
+                iepFindDoc(inquiryId).then(function (doc) {
+                    iepOriginalData = doc.data();
+                    console.log('[IEP] Document data loaded:', iepOriginalData);
+                    iepPopulateForm(iepOriginalData);
+                    iepShowState('form');
+                }).catch(function (err) {
+                    console.error('[IEP] All collections failed. Doc ID:', inquiryId, 'Error:', err);
+                    iepShowState('error');
+                    iepErrorMsg.innerHTML = 'Could not find document <strong style="color:var(--evergreen);word-break:break-all;">' + inquiryId + '</strong> in any collection.<br><br><span style="font-size:.78rem;opacity:.7;">Tried: ' + iepCollectionNames.join(', ') + '</span><br><span style="font-size:.78rem;opacity:.7;">Check the browser console (F12) for details.</span>';
+                });
+            }
+
+            /* ===== Fill form from doc data ===== */
+            function iepPopulateForm(d) {
+                var name = d.name || d.fullName || d.userName || d.firstName || '';
+                if (d.firstName && d.lastName) name = d.firstName + ' ' + d.lastName;
+                iepHeaderSub.textContent = 'Editing inquiry from ' + (name || 'Unknown');
+                iepReceivedDate.textContent = iepFormatDate(d.createdAt || d.submittedAt || d.timestamp || d.date);
+
+                iepNameInput.value = name;
+                iepEmailInput.value = d.email || d.emailAddress || d.emailId || '';
+                iepPhoneInput.value = d.phone || d.phoneNumber || d.mobile || d.telephone || '';
+
+                /* Service dropdown */
+                var svc = d.service || d.serviceOfInterest || d.type || d.category || d.subject || '';
+                var opts = iepServiceSel.options;
+                var found = false;
+                for (var i = 0; i < opts.length; i++) {
+                    if (opts[i].value && opts[i].value.toLowerCase() === String(svc).toLowerCase()) {
+                        iepServiceSel.value = opts[i].value;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) iepServiceSel.value = '';
+
+                iepSubjectInput.value = d.subject || d.inquirySubject || d.title || '';
+                iepMessageInput.value = d.message || d.inquiryMessage || d.description || d.body || d.content || '';
+
+                /* Status */
+                var status = d.status || 'New';
+                status = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+                /* Validate against available options */
+                var validStatuses = ['New', 'In Progress', 'Replied', 'Resolved', 'Closed'];
+                if (validStatuses.indexOf(status) === -1) status = 'New';
+                iepSetStatus(status);
+
+                /* Priority */
+                var priority = d.priority || 'Low';
+                priority = priority.charAt(0).toUpperCase() + priority.slice(1).toLowerCase();
+                var validPriorities = ['Low', 'Medium', 'High', 'Urgent'];
+                if (validPriorities.indexOf(priority) === -1) priority = 'Low';
+                iepSetPriority(priority);
+
+                /* Response */
+                iepResponseArea.value = d.response || d.adminNotes || d.reply || d.notes || d.adminReply || '';
+
+                /* Timeline */
+                iepBuildTimeline(d);
+            }
+
+            /* ===== Close panel ===== */
+            function iepClosePanel() {
+                iepOverlay.classList.remove('iep-overlay--open');
+                iepOverlay.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+                setTimeout(function () {
+                    iepForm.reset();
+                    iepCurrentId = null;
+                    iepOriginalData = null;
+                    iepSetStatus('New');
+                    iepSetPriority('Low');
+                    iepShowState('loading');
+                    iepTimeline.innerHTML = '<p class="iep-timeline-empty">No activity recorded yet.</p>';
+                }, 420);
+            }
+
+            /* ===== Save ===== */
+            function iepSaveInquiry() {
+                if (iepIsSaving) return;
+
+                var name = iepNameInput.value.trim();
+                var email = iepEmailInput.value.trim();
+                var subject = iepSubjectInput.value.trim();
+
+                if (!name) { iepShowToast('Name is required.', 'error'); iepNameInput.focus(); return; }
+                if (!email) { iepShowToast('Email is required.', 'error'); iepEmailInput.focus(); return; }
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { iepShowToast('Please enter a valid email.', 'error'); iepEmailInput.focus(); return; }
+                if (!subject) { iepShowToast('Subject is required.', 'error'); iepSubjectInput.focus(); return; }
+
+                iepIsSaving = true;
+                iepSaveBtn.classList.add('iep-btn-save--loading');
+                iepSaveBtn.disabled = true;
+
+                var oldResp = iepOriginalData ? (iepOriginalData.response || iepOriginalData.adminNotes || iepOriginalData.reply || '') : '';
+                var newResp = iepResponseArea.value.trim();
+
+                var payload = {
+                    name: name,
+                    email: email,
+                    phone: iepPhoneInput.value.trim(),
+                    service: iepServiceSel.value,
+                    subject: subject,
+                    message: iepMessageInput.value.trim(),
+                    status: iepSelectedStatus,
+                    priority: iepSelectedPriority,
+                    response: newResp,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                if (!oldResp.trim() && newResp.trim()) {
+                    payload.repliedAt = firebase.firestore.FieldValue.serverTimestamp();
+                }
+
+                /* Use the collection we found the doc in, or try all again */
+                var saveCol = iepFoundCollection || 'inquiries';
+                console.log('[IEP] Saving to collection:', saveCol, 'doc:', iepCurrentId);
+
+                db.collection(saveCol).doc(iepCurrentId).update(payload).then(function () {
+                    iepShowToast('Inquiry updated successfully!', 'success');
+                    iepIsSaving = false;
+                    iepSaveBtn.classList.remove('iep-btn-save--loading');
+                    iepSaveBtn.disabled = false;
+                    setTimeout(iepClosePanel, 900);
+                }).catch(function (err) {
+                    /* If save fails, try all collections */
+                    console.warn('[IEP] Save to', saveCol, 'failed, trying all collections...');
+                    var chain = Promise.reject(new Error('start'));
+                    for (var i = 0; i < iepCollectionNames.length; i++) {
+                        (function (colName) {
+                            chain = chain.catch(function () {
+                                return db.collection(colName).doc(iepCurrentId).update(payload).then(function () {
+                                    iepFoundCollection = colName;
+                                    console.log('[IEP] Saved to:', colName);
+                                });
+                            });
+                        })(iepCollectionNames[i]);
+                    }
+                    return chain;
+                }).then(function () {
+                    if (iepIsSaving) {
+                        iepShowToast('Inquiry updated successfully!', 'success');
+                        iepIsSaving = false;
+                        iepSaveBtn.classList.remove('iep-btn-save--loading');
+                        iepSaveBtn.disabled = false;
+                        setTimeout(iepClosePanel, 900);
+                    }
+                }).catch(function (err) {
+                    console.error('[IEP] All save attempts failed:', err);
+                    iepShowToast('Save failed: ' + err.message, 'error');
+                    iepIsSaving = false;
+                    iepSaveBtn.classList.remove('iep-btn-save--loading');
+                    iepSaveBtn.disabled = false;
+                });
+            }
+
+            /* ===== AGGRESSIVE ID extraction from any element ===== */
+            function iepExtractId(el) {
+                if (!el) return null;
+                /* Check known attributes first */
+                var known = ['data-inquiry-id', 'data-id', 'data-doc-id', 'data-document-id', 'data-uid', 'data-key'];
+                for (var i = 0; i < known.length; i++) {
+                    var val = el.getAttribute(known[i]);
+                    if (val && val.trim()) return val.trim();
+                }
+                /* Scan ALL data attributes for anything that looks like an ID */
+                if (el.attributes) {
+                    for (var j = 0; j < el.attributes.length; j++) {
+                        var attr = el.attributes[j];
+                        if (attr.name.indexOf('data-') === 0 && attr.value && attr.value.trim().length > 5) {
+                            /* Skip obvious non-IDs */
+                            var skip = ['data-tab', 'data-action', 'data-status', 'data-priority', 'data-tpl', 'data-theme', 'data-role'];
+                            if (skip.indexOf(attr.name) !== -1) continue;
+                            console.log('[IEP] Found potential ID attr:', attr.name, '=', attr.value);
+                            return attr.value.trim();
+                        }
+                    }
+                }
+                return null;
+            }
+
+            /* ===== Wire listeners ===== */
+            function iepWireListeners() {
+                iepCloseBtn.addEventListener('click', iepClosePanel);
+                iepErrorClose.addEventListener('click', iepClosePanel);
+                iepDiscardBtn.addEventListener('click', iepClosePanel);
+
+                iepOverlay.addEventListener('click', function (e) {
+                    if (e.target === iepOverlay) iepClosePanel();
+                });
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape' && iepOverlay.classList.contains('iep-overlay--open')) iepClosePanel();
+                });
+
+                iepForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    iepSaveInquiry();
+                });
+
+                iepStatusOpts.addEventListener('click', function (e) {
+                    var btn = e.target.closest('.iep-status-btn');
+                    if (btn) iepSetStatus(btn.getAttribute('data-status'));
+                });
+
+                iepPriorityOpts.addEventListener('click', function (e) {
+                    var btn = e.target.closest('.iep-priority-btn');
+                    if (btn) iepSetPriority(btn.getAttribute('data-priority'));
+                });
+
+                var tplBtns = document.querySelectorAll('.iep-template-btn');
+                for (var t = 0; t < tplBtns.length; t++) {
+                    tplBtns[t].addEventListener('click', function () {
+                        var key = this.getAttribute('data-tpl');
+                        if (iepTemplates[key]) {
+                            iepResponseArea.value = iepTemplates[key];
+                            iepResponseArea.focus();
+                            iepShowToast('Template inserted. Edit as needed.', 'success');
+                        }
+                    });
+                }
+
+                /* ===== INTERCEPT INQUIRY EDIT CLICKS ===== */
+                document.addEventListener('click', function (e) {
+                    var btn = e.target.closest('.ba-act-btn--edit, .inquiry-edit-btn, [data-action="edit"], .edit-inquiry-btn, .inq-edit');
+                    if (!btn) return;
+
+                    /* Skip if in blogs tab */
+                    var inBlogsTab = btn.closest('#tab-blogs');
+                    if (inBlogsTab) return;
+
+                    /* Extract ID from button */
+                    var inquiryId = iepExtractId(btn);
+
+                    /* If not on button, walk up the DOM tree (up to 5 levels) */
+                    if (!inquiryId) {
+                        var walker = btn.parentElement;
+                        var depth = 0;
+                        while (walker && depth < 5) {
+                            inquiryId = iepExtractId(walker);
+                            if (inquiryId) break;
+                            walker = walker.parentElement;
+                            depth++;
+                        }
+                    }
+
+                    if (!inquiryId) {
+                        /* Can't find ID — don't intercept, let old handler run */
+                        console.warn('[IEP] Edit button clicked but no ID found on button or parents:', btn);
+                        return;
+                    }
+
+                    console.log('[IEP] Intercepted click, inquiry ID:', inquiryId);
+                    e.stopPropagation();
+                    e.preventDefault();
+                    iepOpenPanel(inquiryId);
+                }, true);
+            }
+
+            /* ===== Bootstrap ===== */
+            function iepInit() {
+                iepSetStatus('New');
+                iepSetPriority('Low');
+                iepWireListeners();
+                iepShowState('loading');
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', iepInit);
+            } else {
+                iepInit();
+            }
+
+        })();
+    </script>
+
+    <!-- ===== APPOINTMENT EDIT MODAL ===== -->
+    <style>
+        .ae-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(22, 48, 42, .6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 28px 12px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .4s cubic-bezier(.22, .61, .36, 1), visibility .4s;
+            font-family: "Mulish", system-ui, sans-serif
+        }
+
+        .ae-overlay.ae-open {
+            opacity: 1;
+            visibility: visible
+        }
+
+        .ae-modal {
+            background: var(--surface, #fbf7ef);
+            border-radius: 24px;
+            max-width: 580px;
+            width: 100%;
+            max-height: calc(100vh - 56px);
+            box-shadow: 0 40px 100px -30px rgba(22, 48, 42, .65);
+            transform: translateY(24px) scale(.97);
+            transition: transform .5s cubic-bezier(.22, .61, .36, 1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(22, 48, 42, .1)
+        }
+
+        .ae-overlay.ae-open .ae-modal {
+            transform: translateY(0) scale(1)
+        }
+
+        .ae-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 28px;
+            border-bottom: 1px solid rgba(22, 48, 42, .1);
+            flex: none;
+            background: var(--surface, #fbf7ef);
+            z-index: 2
+        }
+
+        .ae-header h2 {
+            font-family: "Fraunces", Georgia, serif;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--evergreen, #16302a)
+        }
+
+        .ae-header p {
+            font-size: .7rem;
+            color: var(--ink-soft, #54635c);
+            margin-top: 2px;
+            word-break: break-all
+        }
+
+        .ae-close-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(22, 48, 42, .07);
+            color: var(--ink-soft, #54635c);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: background .3s, transform .3s, color .3s;
+            flex: none
+        }
+
+        .ae-close-btn:hover {
+            background: var(--honey, #bc7f37);
+            color: #fff;
+            transform: rotate(90deg)
+        }
+
+        .ae-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 28px 8px
+        }
+
+        .ae-body::-webkit-scrollbar {
+            width: 5px
+        }
+
+        .ae-body::-webkit-scrollbar-thumb {
+            background: rgba(22, 48, 42, .15);
+            border-radius: 10px
+        }
+
+        .ae-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            padding: 80px 24px;
+            color: var(--ink-soft, #54635c);
+            font-size: .9rem
+        }
+
+        .ae-spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(22, 48, 42, .1);
+            border-top-color: var(--honey, #bc7f37);
+            border-radius: 50%;
+            animation: aeSp .6s linear infinite
+        }
+
+        @keyframes aeSp {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .ae-err {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 60px 24px;
+            text-align: center;
+            color: var(--ink-soft, #54635c)
+        }
+
+        .ae-err svg {
+            opacity: .3
+        }
+
+        .ae-err h3 {
+            font-family: "Fraunces", Georgia, serif;
+            font-size: 1.05rem;
+            color: var(--evergreen, #16302a)
+        }
+
+        .ae-err p {
+            font-size: .84rem;
+            max-width: 320px
+        }
+
+        .ae-g2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px
+        }
+
+        .ae-g3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px
+        }
+
+        .ae-f {
+            margin-bottom: 16px
+        }
+
+        .ae-f label {
+            display: block;
+            font-size: .73rem;
+            font-weight: 700;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            color: var(--evergreen, #16302a);
+            margin-bottom: 5px
+        }
+
+        .ae-f input,
+        .ae-f select,
+        .ae-f textarea {
+            width: 100%;
+            padding: .68em .9em;
+            border: 1px solid rgba(22, 48, 42, .12);
+            border-radius: 12px;
+            background: var(--bone, #f8f4ec);
+            font-family: "Mulish", sans-serif;
+            font-size: .87rem;
+            color: var(--ink, #21302b);
+            transition: border-color .3s, box-shadow .3s;
+            outline: none;
+            line-height: 1.5
+        }
+
+        .ae-f input:focus,
+        .ae-f select:focus,
+        .ae-f textarea:focus {
+            border-color: var(--honey, #bc7f37);
+            box-shadow: 0 0 0 3px rgba(188, 127, 55, .12)
+        }
+
+        .ae-f textarea {
+            resize: vertical;
+            min-height: 70px
+        }
+
+        .ae-f input::placeholder,
+        .ae-f textarea::placeholder {
+            color: rgba(84, 99, 92, .45)
+        }
+
+        .ae-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 16px 28px;
+            border-top: 1px solid rgba(22, 48, 42, .1);
+            flex: none;
+            background: var(--surface, #fbf7ef)
+        }
+
+        .ae-b {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: "Mulish", sans-serif;
+            font-weight: 600;
+            font-size: .84rem;
+            padding: .62em 1.5em;
+            border-radius: 100px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: transform .3s cubic-bezier(.22, .61, .36, 1), background .3s, box-shadow .3s, color .3s, opacity .3s
+        }
+
+        .ae-b:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+            transform: none !important
+        }
+
+        .ae-bp {
+            background: var(--honey, #bc7f37);
+            color: #fff;
+            box-shadow: 0 10px 24px -10px rgba(188, 127, 55, .7)
+        }
+
+        .ae-bp:hover:not(:disabled) {
+            transform: translateY(-2px);
+            background: #a96f2c
+        }
+
+        .ae-bg {
+            background: transparent;
+            color: var(--evergreen, #16302a);
+            border-color: rgba(22, 48, 42, .12)
+        }
+
+        .ae-bg:hover:not(:disabled) {
+            transform: translateY(-2px);
+            border-color: var(--evergreen, #16302a);
+            background: rgba(22, 48, 42, .04)
+        }
+
+        .ae-ss {
+            display: none;
+            width: 15px;
+            height: 15px;
+            border: 2px solid rgba(255, 255, 255, .3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: aeSp .6s linear infinite
+        }
+
+        .ae-tw {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10001;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none
+        }
+
+        .ae-tt {
+            padding: .65em 1.1em;
+            border-radius: 12px;
+            font-family: "Mulish", sans-serif;
+            font-size: .82rem;
+            font-weight: 600;
+            color: #fff;
+            box-shadow: 0 8px 24px -6px rgba(0, 0, 0, .3);
+            transform: translateX(120%);
+            transition: transform .4s cubic-bezier(.22, .61, .36, 1), opacity .3s;
+            opacity: 0;
+            pointer-events: auto
+        }
+
+        .ae-tt.ae-ts {
+            transform: translateX(0);
+            opacity: 1
+        }
+
+        .ae-tok {
+            background: #2d6a4f
+        }
+
+        .ae-tno {
+            background: #b94a48
+        }
+
+        @media(max-width:600px) {
+
+            .ae-g2,
+            .ae-g3 {
+                grid-template-columns: 1fr
+            }
+
+            .ae-overlay {
+                padding: 10px 6px
+            }
+
+            .ae-modal {
+                border-radius: 20px
+            }
+
+            .ae-header,
+            .ae-body,
+            .ae-footer {
+                padding-left: 20px;
+                padding-right: 20px
+            }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+
+            .ae-overlay,
+            .ae-modal,
+            .ae-tt,
+            .ae-b,
+            .ae-close-btn,
+            .ae-f input,
+            .ae-f select,
+            .ae-f textarea {
+                transition: none !important;
+                animation: none !important
+            }
+
+            .ae-spinner,
+            .ae-ss {
+                animation: none !important
+            }
+        }
+    </style>
+
+    <div id="ae_ov" class="ae-overlay" role="dialog" aria-modal="true" aria-label="Edit Appointment">
+        <div class="ae-modal">
+            <div class="ae-header">
+                <div>
+                    <h2>Edit Appointment</h2>
+                    <p id="ae_hid"></p>
+                </div>
+                <button class="ae-close-btn" id="ae_x" aria-label="Close"><svg width="18" height="18"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg></button>
+            </div>
+            <div class="ae-body">
+                <div class="ae-loading" id="ae_ld">
+                    <div class="ae-spinner"></div>
+                    <p>Loading...</p>
+                </div>
+                <div class="ae-err" id="ae_er" style="display:none">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    <h3>Not Found</h3>
+                    <p id="ae_emsg"></p>
+                    <button type="button" class="ae-b ae-bg" id="ae_ec">Close</button>
+                </div>
+                <form id="ae_fm" style="display:none" autocomplete="off">
+                    <div class="ae-g2">
+                        <div class="ae-f"><label for="ae_name">Name *</label><input type="text" id="ae_name" required>
+                        </div>
+                        <div class="ae-f"><label for="ae_gender">Gender</label>
+                            <select id="ae_gender">
+                                <option value="">-- Select --</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                                <option>Prefer not to say</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ae-g2">
+                        <div class="ae-f"><label for="ae_email">Email</label><input type="email" id="ae_email"></div>
+                        <div class="ae-f"><label for="ae_phone">Phone</label><input type="tel" id="ae_phone"></div>
+                    </div>
+                    <div class="ae-g2">
+                        <div class="ae-f"><label for="ae_service">Service</label>
+                            <select id="ae_service">
+                                <option value="">-- Select --</option>
+                                <option>Individual Counselling</option>
+                                <option>Couples Counselling</option>
+                                <option>Family Therapy</option>
+                                <option>Child Counselling</option>
+                                <option>Massage Therapy</option>
+                                <option>Physiotherapy</option>
+                                <option>Yoga & Meditation</option>
+                                <option>Nutrition Consultation</option>
+                                <option>General Inquiry</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="ae-f"><label for="ae_date">Date</label><input type="date" id="ae_date"></div>
+                    </div>
+                    <div class="ae-g3">
+                        <div class="ae-f"><label for="ae_time">Time</label><input type="time" id="ae_time"></div>
+                        <div class="ae-f"><label for="ae_status">Status</label>
+                            <select id="ae_status">
+                                <option value="new">New</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                                <option value="spam">Spam</option>
+                            </select>
+                        </div>
+                        <div class="ae-f"><label for="ae_priority">Priority</label>
+                            <select id="ae_priority">
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ae-f"><label for="ae_message">Message</label><textarea id="ae_message"
+                            rows="3"></textarea>
+                    </div>
+                    <div class="ae-f"><label for="ae_notes">Notes</label><textarea id="ae_notes" rows="2"
+                            placeholder="Internal notes..."></textarea></div>
+                </form>
+            </div>
+            <div class="ae-footer" id="ae_ft" style="display:none">
+                <button type="button" class="ae-b ae-bg" id="ae_cn">Cancel</button>
+                <button type="button" class="ae-b ae-bp" id="ae_sb"><span class="ae-stx">Save Changes</span><span
+                        class="ae-ss"></span></button>
+            </div>
+        </div>
+    </div>
+    <div id="ae_tw" class="ae-tw"></div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            /* ===== Candidate field names for each form element ===== */
+            var NAME_MAP = {
+                ae_name: ['name', 'fullName', 'full_name', 'customerName', 'customer_name', 'userName', 'user_name', 'senderName', 'from_name'],
+                ae_gender: ['gender', 'sex'],
+                ae_email: ['email', 'emailAddress', 'email_address', 'mail', 'senderEmail', 'sender_email', 'from_email', 'eMail'],
+                ae_phone: ['phone', 'phoneNumber', 'phone_number', 'phoneNo', 'phone_no', 'contact', 'contactNumber', 'contact_number', 'mobile', 'tel', 'telephone', 'cell'],
+                ae_service: ['service', 'serviceOfInterest', 'service_type', 'serviceType', 'type', 'category', 'department', 'interest'],
+                ae_date: ['date', 'appointmentDate', 'appointment_date', 'preferredDate', 'preferred_date', 'dateOfAppointment', 'bookDate', 'book_date', 'dateOfBirth'],
+                ae_time: ['time', 'appointmentTime', 'appointment_time', 'preferredTime', 'preferred_time', 'timeOfAppointment', 'bookTime', 'book_time', 'slot'],
+                ae_status: ['status', 'inquiryStatus', 'inquiry_status', 'state', 'stage', 'bookingStatus'],
+                ae_priority: ['priority', 'importance', 'urgency', 'level'],
+                ae_message: ['message', 'description', 'body', 'content', 'inquiry', 'details', 'query', 'msg', 'text'],
+                ae_notes: ['notes', 'adminNotes', 'admin_notes', 'internalNotes', 'internal_notes', 'remarks', 'comment', 'adminNote']
+            };
+
+            /* Stores: formFieldId -> EXACT Firestore key name that was matched (or null) */
+            var matchedKeys = {};
+
+            var DOC = null;
+            var $o = document.getElementById('ae_ov');
+            var $ld = document.getElementById('ae_ld');
+            var $er = document.getElementById('ae_er');
+            var $fm = document.getElementById('ae_fm');
+            var $ft = document.getElementById('ae_ft');
+
+            /* Convert any value to string — handles Firestore Timestamps properly */
+            function valToStr(v) {
+                if (v === null || v === undefined) return '';
+                if (v && typeof v.toDate === 'function') {
+                    var d = v.toDate();
+                    var yyyy = d.getFullYear();
+                    var mm = String(d.getMonth() + 1).padStart(2, '0');
+                    var dd = String(d.getDate()).padStart(2, '0');
+                    return yyyy + '-' + mm + '-' + dd;
+                }
+                return String(v);
+            }
+
+            function toast(m, t) {
+                var e = document.createElement('div');
+                e.className = 'ae-tt ae-t' + (t === 'ok' ? 'ok' : 'no');
+                e.textContent = m;
+                document.getElementById('ae_tw').appendChild(e);
+                requestAnimationFrame(function () { e.classList.add('ae-ts'); });
+                setTimeout(function () { e.classList.remove('ae-ts'); setTimeout(function () { e.remove(); }, 400); }, 3000);
+            }
+
+            /* Set select value — exact match first, then case-insensitive, then add option */
+            function setSel(id, v) {
+                var el = document.getElementById(id);
+                if (!el || v === undefined || v === null || v === '') return;
+                var sv = String(v), found = false;
+                for (var i = 0; i < el.options.length; i++) {
+                    if (el.options[i].value === sv) { el.selectedIndex = i; found = true; break; }
+                }
+                if (!found) {
+                    for (var j = 0; j < el.options.length; j++) {
+                        if (el.options[j].value.toLowerCase() === sv.toLowerCase()) { el.selectedIndex = j; found = true; break; }
+                    }
+                }
+                if (!found) { var o = document.createElement('option'); o.value = sv; o.textContent = sv; el.appendChild(o); el.value = sv; }
+            }
+
+            /* ===== FIXED POPULATE =====
+               1. Builds a case-insensitive map of ALL actual document keys
+               2. For each form field, scans candidates against that map
+               3. PREFERS the candidate that has a non-empty value
+               4. Falls back to empty-value candidate only if no non-empty match exists
+               5. Stores the EXACT original Firestore key (preserving casing)
+               This prevents matching an empty "phone" when the real data is in "phoneNumber" */
+            function populateForm(d) {
+                matchedKeys = {};
+
+                /* Build: lowercase(docKey) -> exact docKey — handles any casing in Firestore */
+                var docKeyMap = {};
+                var allDocKeys = Object.keys(d);
+                for (var k = 0; k < allDocKeys.length; k++) {
+                    docKeyMap[allDocKeys[k].toLowerCase()] = allDocKeys[k];
+                }
+
+                for (var formId in NAME_MAP) {
+                    var el = document.getElementById(formId);
+                    if (!el) continue;
+
+                    var candidates = NAME_MAP[formId];
+                    var bestKey = null, bestVal = null;       /* first non-empty match */
+                    var fallbackKey = null, fallbackVal = null; /* first empty match (last resort) */
+
+                    for (var i = 0; i < candidates.length; i++) {
+                        var candidate = candidates[i];
+                        /* Case-insensitive lookup against the actual document keys */
+                        var exactKey = docKeyMap[candidate.toLowerCase()];
+                        if (!exactKey) continue; /* this candidate doesn't exist in the doc */
+
+                        var val = d[exactKey];
+                        var isEmpty = (val === null || val === undefined || val === '');
+
+                        if (!isEmpty && bestKey === null) {
+                            bestKey = exactKey;
+                            bestVal = val;
+                        } else if (isEmpty && fallbackKey === null) {
+                            fallbackKey = exactKey;
+                            fallbackVal = val;
+                        }
+                    }
+
+                    /* Use non-empty match if available, otherwise fall back to empty match */
+                    var useKey = bestKey !== null ? bestKey : fallbackKey;
+                    var useVal = bestKey !== null ? bestVal : fallbackVal;
+
+                    /* Store the EXACT Firestore key (or null if nothing matched) */
+                    matchedKeys[formId] = useKey;
+
+                    if (useKey !== null) {
+                        if (el.tagName === 'SELECT') {
+                            setSel(formId, useVal);
+                        } else {
+                            el.value = valToStr(useVal);
+                        }
+                    } else {
+                        /* No matching field found in document at all */
+                        if (el.tagName === 'SELECT') el.selectedIndex = 0;
+                        else el.value = '';
+                    }
+                }
+            }
+
+            /* ===== SAVE: Only update fields that existed in the original document, using their EXACT keys ===== */
+            function buildUpdate() {
+                var u = {};
+                for (var formId in matchedKeys) {
+                    /* Skip fields that didn't exist in the original document — prevents creating new fields */
+                    if (matchedKeys[formId] === null) continue;
+                    var el = document.getElementById(formId);
+                    if (!el) continue;
+                    var val = (el.tagName === 'SELECT') ? el.value : el.value.trim();
+                    /* Use the EXACT Firestore key that was remembered during populate */
+                    u[matchedKeys[formId]] = val;
+                }
+                u.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+                return u;
+            }
+
+            function open(id) {
+                if (!id) { toast('No document ID found.', 'no'); return; }
+                DOC = id;
+                $o.classList.add('ae-open');
+                document.body.style.overflow = 'hidden';
+                document.getElementById('ae_hid').textContent = 'ID: ' + id;
+                $ld.style.display = 'flex'; $er.style.display = 'none'; $fm.style.display = 'none'; $ft.style.display = 'none';
+
+                db.collection('appointment').doc(id).get().then(function (snap) {
+                    if (!snap.exists) {
+                        $ld.style.display = 'none'; $er.style.display = 'flex';
+                        document.getElementById('ae_emsg').textContent = 'No appointment found with ID: ' + id;
+                        return;
+                    }
+                    var d = snap.data();
+                    $fm.reset();
+                    populateForm(d);
+                    $ld.style.display = 'none'; $fm.style.display = 'block'; $ft.style.display = 'flex';
+                    var first = $fm.querySelector('#ae_name');
+                    if (first) setTimeout(function () { first.focus(); }, 300);
+                }).catch(function (err) {
+                    $ld.style.display = 'none'; $er.style.display = 'flex';
+                    document.getElementById('ae_emsg').textContent = err.message;
+                });
+            }
+
+            function close() {
+                $o.classList.remove('ae-open');
+                document.body.style.overflow = '';
+                setTimeout(function () { $fm.reset(); DOC = null; matchedKeys = {}; $ld.style.display = 'flex'; $er.style.display = 'none'; $fm.style.display = 'none'; $ft.style.display = 'none'; }, 400);
+            }
+
+            function save() {
+                var nm = document.getElementById('ae_name').value.trim();
+                if (!nm) { toast('Name is required.', 'no'); document.getElementById('ae_name').focus(); return; }
+                var em = document.getElementById('ae_email').value.trim();
+                if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { toast('Enter a valid email.', 'no'); document.getElementById('ae_email').focus(); return; }
+
+                var u = buildUpdate();
+                var st = document.querySelector('.ae-stx');
+                var sp = document.querySelector('.ae-ss');
+                var btn = document.getElementById('ae_sb');
+                st.style.display = 'none'; sp.style.display = 'inline-block'; btn.disabled = true;
+
+                db.collection('appointment').doc(DOC).update(u).then(function () {
+                    toast('Appointment updated successfully.', 'ok');
+                    close();
+                    var r = ['loadInquiries', 'renderInquiries', 'fetchInquiries', 'loadAppointments', 'renderAppointments', 'fetchAppointments', 'loadInquiryList', 'renderInquiryList', 'loadData', 'refreshList'];
+                    for (var i = 0; i < r.length; i++) { if (typeof window[r[i]] === 'function') { try { window[r[i]](); } catch (e) { } break; } }
+                }).catch(function (err) {
+                    toast('Save failed: ' + err.message, 'no');
+                }).finally(function () {
+                    st.style.display = 'inline'; sp.style.display = 'none'; btn.disabled = false;
+                });
+            }
+
+            document.getElementById('ae_x').addEventListener('click', close);
+            document.getElementById('ae_cn').addEventListener('click', close);
+            document.getElementById('ae_ec').addEventListener('click', close);
+            document.getElementById('ae_sb').addEventListener('click', save);
+            $o.addEventListener('click', function (e) { if (e.target === $o) close(); });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $o.classList.contains('ae-open')) close(); });
+            $fm.addEventListener('submit', function (e) { e.preventDefault(); save(); });
+
+            /* ===== HIJACK EDIT BUTTONS ===== */
+            document.addEventListener('click', function (e) {
+                var b = e.target.closest('button,a');
+                if (!b) return;
+                var tab = b.closest('#tab-inquiry');
+                if (!tab) return;
+                var c = (b.className || '').toLowerCase(), t = (b.title || '').toLowerCase(), a = (b.getAttribute('aria-label') || '').toLowerCase(), tx = (b.textContent || '').toLowerCase().trim();
+                if (c.indexOf('delete') !== -1 || c.indexOf('remove') !== -1 || c.indexOf('trash') !== -1) return;
+                if (t.indexOf('delete') !== -1) return;
+                if (tx === 'delete' || tx === 'remove' || tx === 'trash') return;
+                var isEdit = c.indexOf('edit') !== -1 || t.indexOf('edit') !== -1 || a.indexOf('edit') !== -1 || (b.getAttribute('data-action') || '').toLowerCase() === 'edit' || tx === 'edit';
+                if (!isEdit) {
+                    var svg = b.querySelector('svg');
+                    if (svg) { var ps = svg.querySelectorAll('path'); for (var i = 0; i < ps.length; i++) { var pd = ps[i].getAttribute('d') || ''; if (pd.indexOf('M17 3') !== -1 || pd.indexOf('m17 3') !== -1 || pd.indexOf('M11 4H4') !== -1) { isEdit = true; break; } } }
+                }
+                if (!isEdit) return;
+                var id = b.getAttribute('data-id') || b.getAttribute('data-doc-id') || b.getAttribute('data-docid') || b.getAttribute('data-key') || '';
+                var de = b.getAttribute('data-edit');
+                if (!id && de && de !== 'true' && de !== '1') id = de;
+                if (!id) { var p = b.closest('[data-id],[data-doc-id],[data-docid],[data-key]'); if (p) id = p.getAttribute('data-id') || p.getAttribute('data-doc-id') || p.getAttribute('data-docid') || p.getAttribute('data-key') || ''; }
+                if (!id) { var w = b; for (var u = 0; u < 8; u++) { w = w.parentElement; if (!w) break; id = w.getAttribute('data-id') || w.id || ''; if (id) break; } }
+                if (!id) return;
+                e.stopPropagation(); e.preventDefault(); e.stopImmediatePropagation();
+                var od = b.disabled; b.disabled = true; setTimeout(function () { b.disabled = od; }, 200);
+                open(id);
+            }, true);
+
+            window.ae_editAppointment = function (id) { open(id); };
+        })();
+    </script>
+
     <script>
         /* ===== DOM References ===== */
         var loginScreen = document.getElementById('loginScreen');
